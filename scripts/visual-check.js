@@ -211,6 +211,7 @@ async function auditMobile(browser, route) {
         if (!el) return null;
         const r = el.getBoundingClientRect();
         return {
+          top: Math.round(r.top),
           left: Math.round(r.left),
           right: Math.round(r.right),
           bottom: Math.round(r.bottom),
@@ -234,6 +235,39 @@ async function auditMobile(browser, route) {
         if (close && close.right > vw + 1) problems.push('prompt close button is off-screen');
         if (cta && cta.bottom > window.innerHeight + 1) {
           problems.push('prompt call button is below the fold');
+        }
+
+        /* While the prompt is open it must be the only thing on screen. The
+           sticky call bar is fixed and carries a backdrop-filter, so trusting
+           z-index alone to keep it underneath is fragile compositing — and when
+           it slips, the visitor gets a second amber call button and a second
+           copy of the phone number directly below the dialog. */
+        const bar = document.querySelector('.callbar');
+        if (bar) {
+          const bs = getComputedStyle(bar);
+          const br = bar.getBoundingClientRect();
+          const showing =
+            bs.display !== 'none' &&
+            bs.visibility !== 'hidden' &&
+            parseFloat(bs.opacity) > 0.01 &&
+            br.height > 0 &&
+            br.top < window.innerHeight;
+          if (showing) problems.push('sticky call bar still showing beneath the prompt');
+        }
+
+        /* Nothing outside the dialog may be painted on top of it. */
+        const midX = Math.round(vw / 2);
+        const samples = [
+          card.top + 24,
+          Math.round((card.top + window.innerHeight) / 2),
+          window.innerHeight - 6,
+        ];
+        for (const y of samples) {
+          const hit = document.elementFromPoint(midX, Math.round(y));
+          if (hit && !hit.closest('.callpop')) {
+            problems.push('something outside the prompt paints over it at y=' + Math.round(y));
+            break;
+          }
         }
       }
 

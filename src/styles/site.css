@@ -152,6 +152,15 @@ button { cursor: pointer; }
 html { scrollbar-gutter: stable; }
 body.is-locked { overflow: hidden; }
 
+/* While the call prompt is open it is the only thing on screen.
+   The sticky call bar is fixed and carries a backdrop-filter, so relying on
+   z-index alone to keep it under the prompt is fragile compositing — and even
+   when it works, the bar puts a second amber call button and a second copy of
+   the phone number directly beneath a dialog whose entire purpose is the first
+   one. `is-locked` is set by CallPopup and by nothing else. */
+body.is-locked .callbar,
+body.is-locked .consent { display: none !important; }
+
 /* A slim, themed scrollbar instead of the OS default with its arrow buttons. */
 * { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
