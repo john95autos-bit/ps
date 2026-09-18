@@ -26,6 +26,7 @@ Thumbs.db
 node_modules/
 dist/
 .smoke/
+.prerender/
 .vercel
 *.log
 

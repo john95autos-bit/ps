@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/generate-seo.js && vite build",
+    "build": "node scripts/generate-seo.js && vite build && vite build --ssr scripts/prerender.jsx --outDir .prerender --logLevel error && node .prerender/prerender.js",
     "preview": "vite preview",
     "seo": "node scripts/generate-seo.js",
-    "smoke": "vite build --ssr scripts/smoke.jsx --outDir .smoke --logLevel error && node .smoke/smoke.js"
+    "smoke": "vite build --ssr scripts/smoke.jsx --outDir .smoke --logLevel error && node .smoke/smoke.js",
+    "prerender": "vite build --ssr scripts/prerender.jsx --outDir .prerender --logLevel error && node .prerender/prerender.js"
   },
   "dependencies": {
     "gsap": "^3.13.0",

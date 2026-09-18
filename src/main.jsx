@@ -8,16 +8,28 @@
  */
 
 import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 
 import './styles/site.css';
 import App from './App.jsx';
 
-createRoot(document.getElementById('root')).render(
+const container = document.getElementById('root');
+
+const tree = (
   <StrictMode>
     <BrowserRouter>
       <App />
     </BrowserRouter>
   </StrictMode>
 );
+
+/* scripts/prerender.jsx writes real HTML into #root at build time, so the
+   browser paints the finished page before this bundle has even parsed. Adopt
+   that markup instead of discarding and re-creating it. The `createRoot` branch
+   is the dev server, where #root really is empty. */
+if (container.hasChildNodes()) {
+  hydrateRoot(container, tree);
+} else {
+  createRoot(container).render(tree);
+}
