@@ -4,8 +4,9 @@ A phone-call-first home-services site built for Google Ads landing pages. React
 18 + Vite + React Router, deployed to Vercel as a static build with one
 serverless function for the enquiry form.
 
-This is a port of the PHP version in the parent directory. Every route, every
-line of copy and the entire stylesheet came across; what changed is listed under
+This is a port of the plain-PHP version that preceded it, which remains in this
+repo's history at commit `2b35216`. Every route, every line of copy and the
+entire stylesheet came across; what changed is listed under
 [Differences from the PHP build](#differences-from-the-php-build).
 
 ## Running it
@@ -31,13 +32,12 @@ consent banner, call prompt) need a real browser.
 ## Deploying to Vercel
 
 1. Push this directory to a Git repo, or run `vercel` from inside it.
-2. If the repo root is the parent folder rather than this one, set **Root
-   Directory** to `react-app` in the Vercel project settings.
-3. Framework preset: **Vite**. Build command and output directory are already in
+2. Framework preset: **Vite**. The app sits at the repo root, so leave **Root
+   Directory** alone — build command and output directory are already in
    `vercel.json`, so the defaults are correct.
-4. Add the environment variables below under **Settings → Environment
+3. Add the environment variables below under **Settings → Environment
    Variables**.
-5. Deploy.
+4. Deploy.
 
 `vercel.json` handles the SPA fallback (so `/roofing` works on a hard refresh
 and as an ad's final URL), the security headers, and immutable caching for

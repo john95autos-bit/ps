@@ -28,3 +28,7 @@ dist/
 .smoke/
 .vercel
 *.log
+
+# Written by scripts/generate-seo.js at build time — output, not source.
+public/robots.txt
+public/sitemap.xml
