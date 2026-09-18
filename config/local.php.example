@@ -1,0 +1,41 @@
+<?php
+
+/**
+ * Local / production configuration override.
+ *
+ * Copy this file to `config/local.php` and edit it. Anything returned here is
+ * merged over config/site.php with array_replace_recursive(), so you only list
+ * the keys you are changing. config/local.php is gitignored.
+ *
+ * This is the one file to edit at launch — see LAUNCH-CHECKLIST.md.
+ */
+
+declare(strict_types=1);
+
+return [
+    'site' => [
+        // --- Business identity -------------------------------------------
+        'name'          => 'Your Business Name',
+        'legal_name'    => 'Your Business Legal Name Ltd',
+        'phone_display' => '(555) 123-4567',
+        'phone_href'    => '+15551234567',   // E.164, digits and a leading +
+        'email'         => 'hello@yourdomain.com',
+        'primary_area'  => 'Springfield',
+        'service_areas' => ['Springfield', 'Shelbyville', 'Ogdenville', 'North Haverbrook'],
+        'hours'         => 'Mon–Sat, 8:00 AM–6:00 PM',
+
+        // --- Domain and tracking -----------------------------------------
+        // No trailing slash. Used for canonical tags, Open Graph and sitemap.xml.
+        'site_url'      => 'https://www.yourdomain.com',
+        'google_ads_id' => 'AW-123456789',
+
+        // Date shown on /privacy, /terms and /disclaimer.
+        'legal_updated' => '1 September 2026',
+
+        // --- The launch switch --------------------------------------------
+        // While false the site sends `noindex, nofollow` and shows a pre-launch
+        // banner on every page. Set it to true only once every value above is
+        // real and every item in LAUNCH-CHECKLIST.md is done.
+        'configured'    => false,
+    ],
+];

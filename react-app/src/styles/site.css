@@ -1,0 +1,1386 @@
+/* Font faces are inlined here rather than @import-ed from fonts.css. The
+   imported file sat outside the ?v=<mtime> cache-busting chain, so with a
+   one-year immutable cache header a font change could never reach a returning
+   visitor. site.css itself IS cache-busted, so the @font-face rules ride along
+   with it. The .woff2 files stay immutable — if a face ever changes, change the
+   filename. */
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-var.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/space-grotesk-var.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+
+/* ===========================================================================
+   AD Housing Services — "Trust Navy" design system
+   ---------------------------------------------------------------------------
+   Built mobile-first for one job: getting a phone call from paid mobile traffic.
+
+   Rules this file follows:
+   · A tappable call action is reachable from every viewport, at every scroll
+     position, on every route.
+   · The amber CTA is the only amber thing on the page. Nothing competes with it.
+   · Every interactive target is at least 48px tall.
+   · Motion is additive. Remove the JavaScript and every word is still on screen.
+   · No fabricated trust signals — no badges, ratings or counts. Credibility is
+     built from structure and clarity instead.
+   =========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   1. Reset
+   --------------------------------------------------------------------------- */
+*, ::before, ::after, ::backdrop {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0 solid;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
+  scroll-behavior: smooth;
+  scroll-padding-top: 74px;
+}
+h1, h2, h3, h4, h5, h6 { font-size: inherit; font-weight: inherit; }
+ol, ul, menu { list-style: none; }
+b, strong { font-weight: 700; }
+a { color: inherit; text-decoration: inherit; }
+img, svg, video, canvas, iframe { display: block; vertical-align: middle; }
+img, video { max-width: 100%; height: auto; }
+button, input, select, textarea {
+  font: inherit; color: inherit; background-color: transparent; border-radius: 0;
+}
+button { cursor: pointer; }
+[hidden]:where(:not([hidden="until-found"])) { display: none !important; }
+::selection { background: var(--amber); color: var(--navy-900); }
+
+/* ---------------------------------------------------------------------------
+   2. Tokens
+   --------------------------------------------------------------------------- */
+:root {
+  /* Navy — structure, authority, every dark surface */
+  --navy-900: #08111F;
+  --navy-800: #0E1C31;
+  --navy-700: #12243F;
+  --navy-600: #1B3457;
+  --navy-500: #274A75;
+  --navy-400: #3E6699;
+
+  /* Amber — the call action, and nothing else */
+  --amber:      #F0A72B;
+  --amber-lift: #FFC257;
+  --amber-deep: #C97F0A;
+
+  /* Neutrals */
+  --white: #FFFFFF;
+  --paper: #F7F9FC;
+  --mist:  #EDF1F7;
+  --line:  #DCE3ED;
+  --line-strong: #C3CEDD;
+  --ink:      #0F1B2D;
+  --ink-soft: #4A5B72;
+  --ink-faint:#7C8AA0;
+
+  /* On-navy text */
+  --on-navy:       #FFFFFF;
+  --on-navy-soft:  rgba(255,255,255,.72);
+  --on-navy-faint: rgba(255,255,255,.52);
+  --on-navy-line:  rgba(255,255,255,.14);
+
+  --danger: #B3261E;
+  --danger-bg: #FDF0EF;
+
+  /* Type */
+  --font-display: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* 8pt spacing scale */
+  /* The large steps were tuned for a spacious editorial site, not a landing
+     page someone scans on a phone. Everything from --s8 up is pulled in, which
+     tightens every section, hero and card at once. */
+  --s1: 4px;   --s2: 8px;   --s3: 12px;  --s4: 16px;  --s5: 20px;
+  --s6: 24px;  --s7: 28px;  --s8: 34px;  --s9: 40px;  --s10: 52px;
+  --s11: 60px; --s12: 72px; --s13: 84px;
+
+  --radius-sm: 8px;
+  --radius: 14px;
+  --radius-lg: 22px;
+  --radius-xl: 32px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgba(8,17,31,.06), 0 2px 8px rgba(8,17,31,.05);
+  --shadow: 0 4px 12px rgba(8,17,31,.07), 0 12px 32px rgba(8,17,31,.07);
+  --shadow-lg: 0 12px 28px rgba(8,17,31,.10), 0 32px 64px rgba(8,17,31,.12);
+  --shadow-amber: 0 6px 18px rgba(201,127,10,.34);
+
+  --gutter: 20px;
+  --wrap: 1440px;
+
+  --ease: cubic-bezier(.22,.75,.28,1);
+  --ease-out: cubic-bezier(.16,1,.3,1);
+  --t-fast: 160ms;
+  --t: 240ms;
+
+  /* Height of the sticky mobile call bar; content reserves this much. */
+  --callbar-h: 0px;
+
+  /* z-index scale */
+  --z-base: 1; --z-raised: 10; --z-header: 40; --z-drawer: 60;
+  --z-callbar: 80; --z-consent: 90; --z-top: 100; --z-modal: 120;
+}
+
+/* Scroll lock while a modal owns the screen. `scrollbar-gutter: stable` on the
+   root reserves the gutter permanently, so locking the body cannot shift the
+   layout sideways by the scrollbar's width. */
+html { scrollbar-gutter: stable; }
+body.is-locked { overflow: hidden; }
+
+/* A slim, themed scrollbar instead of the OS default with its arrow buttons. */
+* { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border: 3px solid var(--paper);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); }
+::-webkit-scrollbar-button { display: none; }   /* the arrow buttons */
+
+/* Dark surfaces get a scrollbar that belongs to them. */
+.s-navy, .s-navy-deep, .callpop, .drawer { scrollbar-color: rgba(255,255,255,.24) transparent; }
+
+/* ---------------------------------------------------------------------------
+   3. Base
+   --------------------------------------------------------------------------- */
+body {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  padding-bottom: var(--callbar-h);
+}
+
+h1, h2, h3, .h1, .h2, .h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -.025em;
+  text-wrap: balance;
+}
+.h1, h1 { font-size: clamp(1.85rem, 5vw, 2.9rem); }
+.h2, h2 { font-size: clamp(1.4rem, 3.2vw, 2rem); }
+.h3, h3 { font-size: clamp(1.02rem, 1.9vw, 1.16rem); line-height: 1.3; letter-spacing: -.012em; }
+
+p { text-wrap: pretty; }
+
+.eyebrow {
+  display: inline-flex; align-items: center; gap: var(--s2);
+  font-family: var(--font-body);
+  font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--navy-500);
+}
+.eyebrow--on-navy { color: var(--amber); }
+
+.lede { font-size: clamp(.95rem, 1.5vw, 1.06rem); line-height: 1.65; color: var(--ink-soft); max-width: 72ch; }
+.lede--on-navy { color: var(--on-navy-soft); }
+.muted { color: var(--ink-soft); }
+.fineprint { font-size: .8rem; line-height: 1.55; color: var(--ink-faint); }
+.fineprint--on-navy { color: var(--on-navy-faint); }
+
+:focus-visible {
+  outline: 3px solid var(--amber);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+.skip-link {
+  position: fixed; top: var(--s2); left: var(--s2); z-index: var(--z-top);
+  padding: var(--s3) var(--s5);
+  background: var(--navy-800); color: var(--white);
+  border-radius: var(--radius-sm); font-weight: 600;
+  transform: translateY(-160%);
+  transition: transform var(--t) var(--ease);
+}
+.skip-link:focus { transform: translateY(0); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   4. Layout
+   --------------------------------------------------------------------------- */
+.wrap { width: 100%; max-width: var(--wrap); margin-inline: auto; padding-inline: var(--gutter); }
+.wrap--narrow { max-width: 940px; }
+
+.section { padding-block: var(--s10); }
+.section--tight { padding-block: var(--s9); }
+.section--lead { padding-block: var(--s9) var(--s11); }
+
+.s-paper { background: var(--paper); }
+.s-white { background: var(--white); }
+.s-mist  { background: var(--mist); }
+.s-navy  { background: var(--navy-700); color: var(--on-navy); }
+.s-navy-deep { background: var(--navy-900); color: var(--on-navy); }
+.s-navy .lede, .s-navy-deep .lede { color: var(--on-navy-soft); }
+.s-navy .muted, .s-navy-deep .muted { color: var(--on-navy-soft); }
+
+.stack > * + * { margin-top: var(--s4); }
+.mt-4 { margin-top: var(--s4); }
+.signal__text { margin-top: 2px; font-size: .88rem; line-height: 1.5; color: var(--ink-soft); }
+.info-card .checklist li { font-size: .88rem; }
+.info-card__num .ic { font-size: 1.05rem; }
+.stack-lg > * + * { margin-top: var(--s6); }
+
+.sec-head { max-width: 72ch; margin-bottom: var(--s7); }
+.sec-head > * + * { margin-top: var(--s4); }
+.sec-head--center { margin-inline: auto; text-align: center; }
+
+/* ---------------------------------------------------------------------------
+   5. Icons — Font Awesome 6, self-hosted and subset
+      The full solid face is 158 KB for 2,492 glyphs. This site uses 14, so the
+      font is subset down to exactly those: 1.7 KB, no CDN request, no
+      third-party origin on an ad landing page. Regenerate with the subset
+      script if an icon is added — the .ic--* rules below ARE the glyph map, so
+      re-subset the font and add the matching --fa line together.
+   --------------------------------------------------------------------------- */
+@font-face {
+  font-family: 'FA6Solid';
+  src: url('/vendor/fontawesome/webfonts/fa-solid-subset.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: block;   /* never flash a fallback letter where an icon belongs */
+}
+
+.ic {
+  display: inline-flex; align-items: center; justify-content: center;
+  flex: 0 0 auto;
+  width: 1em; height: 1em;
+  font-family: 'FA6Solid', sans-serif;
+  font-weight: 900; font-style: normal; font-variant: normal;
+  line-height: 1; text-rendering: auto;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  speak: never;
+}
+.ic::before { content: var(--fa, ""); }
+
+.ic--sm { font-size: .85em; }
+.ic--lg { font-size: 1.3em; }
+
+.ic--alert          { --fa: "\f071"; }
+.ic--arrow-right    { --fa: "\f061"; }
+.ic--check          { --fa: "\f00c"; }
+.ic--chevron-right  { --fa: "\f054"; }
+.ic--clipboard      { --fa: "\f46c"; }
+.ic--clock          { --fa: "\f017"; }
+.ic--house          { --fa: "\f015"; }
+.ic--info           { --fa: "\f05a"; }
+.ic--phone          { --fa: "\f095"; }
+.ic--pin            { --fa: "\f3c5"; }
+.ic--plus           { --fa: "\2b"; }
+.ic--search         { --fa: "\f002"; }
+.ic--shield         { --fa: "\f3ed"; }
+.ic--wrench         { --fa: "\f0ad"; }
+
+/* ---------------------------------------------------------------------------
+   6. Buttons — the conversion surface
+   --------------------------------------------------------------------------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--s3);
+  min-height: 48px; padding: var(--s3) var(--s5);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body); font-size: 1rem; font-weight: 700; line-height: 1.2;
+  text-align: center; cursor: pointer; white-space: nowrap;
+  transition: transform var(--t-fast) var(--ease), box-shadow var(--t) var(--ease),
+              background-color var(--t) var(--ease), border-color var(--t) var(--ease), color var(--t) var(--ease);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: translateY(1px) scale(.985); }
+
+/* Primary — the phone call. 8.8:1 against its own text. */
+.btn--call {
+  background: var(--amber); color: var(--navy-900);
+  box-shadow: var(--shadow-amber);
+  font-weight: 800; letter-spacing: -.01em;
+}
+.btn--call:hover { background: var(--amber-lift); box-shadow: 0 8px 24px rgba(201,127,10,.44); }
+
+.btn--outline { background: transparent; color: var(--ink); border: 1.5px solid var(--line-strong); }
+.btn--outline:hover { border-color: var(--navy-600); background: var(--white); }
+
+.btn--onnavy { background: rgba(255,255,255,.08); color: var(--white); border: 1.5px solid var(--on-navy-line); }
+.btn--onnavy:hover { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.3); }
+
+.btn--dark { background: var(--navy-700); color: var(--white); }
+.btn--dark:hover { background: var(--navy-600); }
+
+.btn--quiet { background: transparent; color: var(--on-navy-soft); border: 1.5px solid var(--on-navy-line); }
+.btn--quiet:hover { color: var(--white); border-color: rgba(255,255,255,.35); }
+
+.btn--lg { min-height: 54px; padding-inline: var(--s6); font-size: 1rem; }
+.btn--block { width: 100%; }
+
+/* The stacked call button: action word on top, number beneath. */
+.btn--stack { flex-direction: row; gap: var(--s3); text-align: left; }
+.btn--stack .btn__label { display: flex; flex-direction: column; line-height: 1.15; }
+.btn--stack .btn__label small { font-size: .72rem; font-weight: 600; opacity: .78; letter-spacing: .02em; }
+.btn--stack .btn__label strong { font-size: 1.1rem; font-weight: 800; letter-spacing: -.02em; }
+
+/* Inline text phone link */
+.call-link {
+  display: inline-flex; align-items: center; gap: var(--s2);
+  font-weight: 700; color: var(--navy-600);
+  border-bottom: 2px solid rgba(39,74,117,.28);
+  padding-bottom: 1px; min-height: 44px;
+  transition: color var(--t) var(--ease), border-color var(--t) var(--ease);
+}
+.call-link:hover { color: var(--navy-800); border-color: var(--amber); }
+.call-link--on-navy { color: var(--amber); border-color: rgba(240,167,43,.35); }
+.call-link--on-navy:hover { color: var(--amber-lift); border-color: var(--amber); }
+
+.textlink {
+  display: inline-flex; align-items: center; gap: var(--s2);
+  font-weight: 700; color: var(--navy-600); min-height: 44px;
+}
+.textlink .ic { transition: transform var(--t) var(--ease); }
+.textlink:hover .ic { transform: translateX(3px); }
+
+/* Pulse ring on the phone glyph — draws the eye to the one action that matters */
+.phone-badge {
+  display: grid; place-items: center; position: relative;
+  width: 40px; height: 40px; flex: 0 0 auto;
+  border-radius: 50%; background: var(--navy-900); color: var(--amber);
+}
+.phone-badge::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  border: 2px solid var(--amber);
+  animation: ring 2.6s var(--ease-out) infinite;
+}
+@keyframes ring {
+  0%   { transform: scale(1);    opacity: .7; }
+  70%  { transform: scale(1.55); opacity: 0; }
+  100% { transform: scale(1.55); opacity: 0; }
+}
+
+/* ---------------------------------------------------------------------------
+   7. Pre-launch notice
+   --------------------------------------------------------------------------- */
+.prelaunch {
+  position: relative; z-index: var(--z-header);
+  background: var(--danger); color: var(--white);
+  font-size: .78rem; line-height: 1.45; font-weight: 600;
+}
+.prelaunch .wrap { display: flex; align-items: center; justify-content: center; gap: var(--s3); padding-block: var(--s2); text-align: center; flex-wrap: wrap; }
+.prelaunch strong { font-weight: 800; letter-spacing: .06em; text-transform: uppercase; font-size: .7rem; }
+.prelaunch span { font-weight: 500; opacity: .92; }
+
+/* ---------------------------------------------------------------------------
+   8. Header
+   --------------------------------------------------------------------------- */
+/* The topbar used to be desktop-only, which meant 7 of the 9 mobile ad landing
+   pages never showed the service area above the fold — the single fact a paid
+   visitor most needs before deciding to call. It now shows on mobile too, in a
+   compact form carrying area + hours. */
+.topbar { background: var(--navy-900); color: var(--on-navy-soft); font-size: .72rem; }
+.topbar .wrap { display: flex; align-items: center; justify-content: center; gap: var(--s4); padding-block: 6px; text-align: center; }
+.topbar__item { display: inline-flex; align-items: center; gap: var(--s1); white-space: nowrap; }
+.topbar__item .ic { width: .95em; height: .95em; }
+.topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: var(--s5); padding-block: var(--s2); }
+.topbar__item { display: inline-flex; align-items: center; gap: var(--s2); }
+.topbar__item .ic { color: var(--amber); }
+
+.masthead {
+  position: sticky; top: 0; z-index: var(--z-header);
+  background: rgba(255,255,255,.94);
+  backdrop-filter: saturate(160%) blur(12px);
+  border-bottom: 1px solid var(--line);
+  transition: box-shadow var(--t) var(--ease);
+}
+.masthead.is-stuck { box-shadow: var(--shadow-sm); }
+.masthead .wrap { display: flex; align-items: center; gap: var(--s4); min-height: 58px; }
+
+.brand { display: inline-flex; align-items: center; gap: var(--s3); margin-right: auto; }
+.brand__mark {
+  display: grid; place-items: center; width: 38px; height: 38px; flex: 0 0 auto;
+  border-radius: 11px; background: var(--navy-700); color: var(--amber);
+}
+.brand__mark .ic { width: 21px; height: 21px; }
+.brand__text { display: flex; flex-direction: column; line-height: 1.1; }
+.brand__text strong { font-family: var(--font-display); font-size: 1.12rem; font-weight: 700; letter-spacing: -.03em; color: var(--navy-800); }
+.brand__text small { font-size: .6rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--ink-faint); }
+
+.mainnav { display: none; }
+.masthead__call { display: none; }
+
+.navtoggle {
+  display: grid; place-items: center; gap: 5px;
+  width: 48px; height: 48px; flex: 0 0 auto;
+  border: 1.5px solid var(--line-strong); border-radius: 12px;
+  background: var(--white); color: var(--navy-700);
+}
+.navtoggle span { display: block; width: 18px; height: 2px; border-radius: 2px; background: currentColor; transition: transform var(--t) var(--ease), opacity var(--t-fast) linear; }
+.navtoggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(3.5px) rotate(45deg); }
+.navtoggle[aria-expanded="true"] span:nth-child(2) { transform: translateY(-3.5px) rotate(-45deg); }
+
+.drawer {
+  position: fixed; inset: 58px 0 auto; z-index: var(--z-drawer);
+  max-height: 0; overflow: hidden; visibility: hidden;
+  background: var(--white); border-bottom: 1px solid var(--line);
+  box-shadow: var(--shadow-lg);
+  transition: max-height 320ms var(--ease), visibility 0s linear 320ms;
+}
+.drawer.is-open { max-height: calc(100dvh - 58px); visibility: visible; overflow-y: auto; transition: max-height 320ms var(--ease), visibility 0s linear 0s; }
+.drawer__inner { padding: var(--s4) var(--gutter) var(--s7); }
+.drawer a:not(.btn) {
+  display: flex; align-items: center; justify-content: space-between;
+  min-height: 54px; padding-block: var(--s2);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-display); font-size: 1.08rem; font-weight: 600; color: var(--navy-800);
+}
+.drawer a:not(.btn) .ic { color: var(--ink-faint); }
+.drawer a.is-active { color: var(--navy-600); }
+.drawer a.is-active .ic { color: var(--amber); }
+.drawer__cta { margin-top: var(--s6); }
+.drawer__hours { margin-top: var(--s4); text-align: center; }
+
+/* ---------------------------------------------------------------------------
+   9. Sticky mobile call bar — the single most important element on the site
+   --------------------------------------------------------------------------- */
+.callbar {
+  position: fixed; right: 0; bottom: 0; left: 0; z-index: var(--z-callbar);
+  display: flex; gap: var(--s3); align-items: stretch;
+  padding: var(--s3) var(--gutter) calc(var(--s3) + env(safe-area-inset-bottom, 0px));
+  background: rgba(8,17,31,.97);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(255,255,255,.12);
+  /* Visible by DEFAULT. The bar is the primary conversion surface, so it must
+     never depend on 129 KB of deferred JavaScript to appear. An inline script in
+     <head> adds .js to <html> before first paint; only then do we hide it so it
+     can slide in. JS blocked, JS slow, JS broken -> the bar is simply there. */
+  transform: translateY(0);
+  transition: transform 340ms var(--ease-out);
+}
+.js .callbar { transform: translateY(110%); }
+.js .callbar.is-in { transform: translateY(0); }
+.callbar__call { flex: 1 1 auto; min-height: 52px; }
+.callbar__aux {
+  display: grid; place-items: center; flex: 0 0 auto;
+  width: 52px; min-height: 52px; border-radius: var(--radius);
+  background: rgba(255,255,255,.1); color: var(--white);
+  border: 1px solid rgba(255,255,255,.16);
+}
+.callbar__aux:hover { background: rgba(255,255,255,.18); }
+
+/* ---------------------------------------------------------------------------
+   10. Hero
+   --------------------------------------------------------------------------- */
+.hero { position: relative; overflow: hidden; background: var(--navy-800); color: var(--on-navy); isolation: isolate; }
+.hero__media { position: absolute; inset: 0; z-index: -2; }
+.hero__media img { width: 100%; height: 100%; object-fit: cover; object-position: 62% center; }
+.hero__scrim {
+  position: absolute; inset: 0; z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(8,17,31,.92) 0%, rgba(8,17,31,.80) 42%, rgba(8,17,31,.94) 100%),
+    linear-gradient(90deg, rgba(8,17,31,.96) 0%, rgba(8,17,31,.55) 70%, rgba(8,17,31,.35) 100%);
+}
+.hero__inner { padding-block: var(--s8) var(--s9); }
+.hero__inner > * + * { margin-top: var(--s5); }
+.hero__title { color: var(--white); }
+.hero__title em { font-style: normal; color: var(--amber); }
+.hero__actions { display: flex; flex-direction: column; gap: var(--s3); }
+.hero__actions .btn { width: 100%; }
+
+.hero__chip {
+  display: inline-flex; align-items: center; gap: var(--s2);
+  padding: var(--s2) var(--s4);
+  border: 1px solid var(--on-navy-line); border-radius: var(--radius-pill);
+  background: rgba(255,255,255,.06);
+  font-size: .76rem; font-weight: 600; color: var(--white);
+}
+.hero__chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--amber); flex: 0 0 auto; }
+
+.hero__points { display: grid; gap: var(--s2); }
+.hero__points li { display: flex; gap: var(--s3); align-items: flex-start; font-size: .9rem; color: var(--on-navy-soft); }
+.hero__points .ic { color: var(--amber); margin-top: 3px; }
+
+/* Compact hero for sub-pages */
+.pagehead { position: relative; overflow: hidden; background: var(--navy-800); color: var(--on-navy); isolation: isolate; }
+.pagehead__media { position: absolute; inset: 0; z-index: -2; }
+.pagehead__media img { width: 100%; height: 100%; object-fit: cover; object-position: 60% center; }
+.pagehead__scrim { position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(8,17,31,.90), rgba(8,17,31,.82) 55%, rgba(8,17,31,.95)); }
+.pagehead__inner { padding-block: var(--s7) var(--s8); }
+.pagehead__inner > * + * { margin-top: var(--s4); }
+.pagehead--plain { background: var(--navy-700); }
+
+.crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); font-size: .78rem; color: var(--on-navy-faint); }
+.crumbs a { color: var(--on-navy-soft); }
+.crumbs a:hover { color: var(--amber); }
+.crumbs .sep { opacity: .5; }
+.crumbs [aria-current] { color: var(--white); font-weight: 600; }
+
+/* ---------------------------------------------------------------------------
+   11. Trust row — honest signals only
+   --------------------------------------------------------------------------- */
+.trustrow { background: var(--navy-900); color: var(--on-navy); border-top: 1px solid var(--on-navy-line); }
+.trustrow__grid { display: grid; gap: var(--s5); padding-block: var(--s7); }
+.trustrow__item { display: flex; gap: var(--s3); align-items: flex-start; }
+.trustrow__item .ic { color: var(--amber); margin-top: 2px; }
+.trustrow__item strong { display: block; font-family: var(--font-display); font-size: 1rem; font-weight: 600; color: var(--white); }
+.trustrow__item span { display: block; font-size: .84rem; line-height: 1.5; color: var(--on-navy-faint); margin-top: 2px; }
+
+/* Quick-call strip */
+.quickcall { background: var(--amber); color: var(--navy-900); }
+.quickcall .wrap { display: flex; flex-direction: column; gap: var(--s4); padding-block: var(--s6); }
+.quickcall p { font-weight: 600; font-size: .95rem; }
+.quickcall strong { font-family: var(--font-display); font-weight: 700; }
+.quickcall .btn { background: var(--navy-900); color: var(--white); box-shadow: none; }
+.quickcall .btn:hover { background: var(--navy-700); }
+
+/* ---------------------------------------------------------------------------
+   12. Cards
+   --------------------------------------------------------------------------- */
+.svc-grid { display: grid; gap: var(--s5); }
+.svc-card {
+  position: relative; display: flex; flex-direction: column; overflow: hidden; isolation: isolate;
+  min-height: 250px; padding: var(--s5);
+  border-radius: var(--radius-lg); background: var(--navy-800); color: var(--on-navy);
+  transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease);
+}
+.svc-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.svc-card img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; transition: transform 700ms var(--ease); }
+.svc-card:hover img { transform: scale(1.06); }
+.svc-card::after {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(180deg, rgba(8,17,31,.42) 0%, rgba(8,17,31,.80) 58%, rgba(8,17,31,.95) 100%);
+}
+.svc-card__tag {
+  align-self: flex-start; padding: 5px var(--s3); border-radius: var(--radius-pill);
+  background: rgba(240,167,43,.16); border: 1px solid rgba(240,167,43,.4);
+  font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--amber);
+}
+.svc-card__body { margin-top: auto; padding-top: var(--s6); }
+.svc-card__body h3 { color: var(--white); }
+.svc-card__body p { margin-top: var(--s3); font-size: .9rem; line-height: 1.6; color: var(--on-navy-soft); }
+.svc-card__more { display: inline-flex; align-items: center; gap: var(--s2); margin-top: var(--s4); font-size: .84rem; font-weight: 700; color: var(--amber); }
+.svc-card__more .ic { transition: transform var(--t) var(--ease); }
+.svc-card:hover .svc-card__more .ic { transform: translateX(4px); }
+
+.tile-grid { display: grid; gap: var(--s4); }
+.tile {
+  display: flex; flex-direction: column; gap: var(--s2);
+  padding: var(--s5); min-height: 124px;
+  background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg);
+  transition: border-color var(--t) var(--ease), transform var(--t) var(--ease), box-shadow var(--t) var(--ease);
+}
+.tile:hover { border-color: var(--navy-500); transform: translateY(-3px); box-shadow: var(--shadow); }
+.tile__num { font-family: var(--font-display); font-size: .78rem; font-weight: 700; letter-spacing: .1em; color: var(--amber-deep); }
+.tile h3 { color: var(--navy-800); }
+.tile p { font-size: .88rem; line-height: 1.6; color: var(--ink-soft); }
+.tile__more { display: inline-flex; align-items: center; gap: var(--s2); margin-top: auto; padding-top: var(--s4); font-size: .82rem; font-weight: 700; color: var(--navy-600); }
+.tile__more .ic { transition: transform var(--t) var(--ease); }
+.tile:hover .tile__more .ic { transform: translateX(4px); }
+
+.info-grid { display: grid; gap: var(--s5); }
+.info-card {
+  display: flex; flex-direction: column;
+  padding: var(--s5);
+  background: var(--white); border: 1px solid var(--line); border-radius: var(--radius);
+}
+/* Pushes the trailing link to the bottom so a row of cards with differing copy
+   lengths still lines its links up. */
+.info-card > .textlink { margin-top: auto; padding-top: var(--s4); }
+.info-card > .checklist { margin-bottom: var(--s2); }
+.info-card__num {
+  display: grid; place-items: center; width: 40px; height: 40px; margin-bottom: var(--s4);
+  border-radius: 12px; background: var(--mist); color: var(--navy-600);
+  font-family: var(--font-display); font-size: .9rem; font-weight: 700;
+}
+.info-card h3 { color: var(--navy-800); }
+.info-card p { margin-top: var(--s2); font-size: .9rem; line-height: 1.65; color: var(--ink-soft); }
+
+/* ---------------------------------------------------------------------------
+   13. Process spine
+   --------------------------------------------------------------------------- */
+.steps { display: grid; gap: 0; counter-reset: step; }
+.step { position: relative; display: grid; grid-template-columns: 38px 1fr; gap: var(--s4); padding-bottom: var(--s6); counter-increment: step; }
+.step:last-child { padding-bottom: 0; }
+.step::before {
+  content: counter(step, decimal-leading-zero);
+  display: grid; place-items: center; width: 38px; height: 38px;
+  border-radius: 50%; background: var(--navy-700); color: var(--amber);
+  font-family: var(--font-display); font-size: .88rem; font-weight: 700;
+}
+.step::after { content: ""; position: absolute; top: 42px; bottom: 8px; left: 18px; width: 2px; background: linear-gradient(180deg, var(--line-strong), transparent); }
+.step:last-child::after { display: none; }
+.step h3 { color: var(--navy-800); padding-top: var(--s2); }
+.step p { margin-top: var(--s2); font-size: .92rem; line-height: 1.65; color: var(--ink-soft); }
+.s-navy .step::before { background: var(--amber); color: var(--navy-900); }
+.s-navy .step::after { background: linear-gradient(180deg, var(--on-navy-line), transparent); }
+.s-navy .step h3 { color: var(--white); }
+.s-navy .step p { color: var(--on-navy-soft); }
+
+/* Signal list (pest clues) */
+.signals { display: grid; gap: var(--s3); }
+.signal { display: flex; gap: var(--s3); align-items: flex-start; padding: var(--s4); background: var(--white); border: 1px solid var(--line); border-left: 3px solid var(--amber); border-radius: var(--radius); }
+.signal .ic { color: var(--amber-deep); margin-top: 2px; }
+.signal strong { font-family: var(--font-display); font-size: 1rem; font-weight: 600; color: var(--navy-800); }
+
+/* Checklist */
+.checklist { display: grid; gap: var(--s3); }
+.checklist li { display: flex; gap: var(--s3); align-items: flex-start; font-size: .94rem; line-height: 1.6; }
+.checklist .ic { flex: 0 0 auto; margin-top: 3px; color: var(--navy-600); }
+.s-navy .checklist .ic, .checklist--on-navy .ic { color: var(--amber); }
+
+/* Highlight pills */
+.pills { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.pill { display: inline-flex; align-items: center; gap: var(--s2); padding: var(--s2) var(--s4); border-radius: var(--radius-pill); background: var(--mist); border: 1px solid var(--line); font-size: .82rem; font-weight: 600; color: var(--navy-700); }
+.pill--on-navy { background: rgba(255,255,255,.07); border-color: var(--on-navy-line); color: var(--white); }
+
+/* Media figure */
+.figure { position: relative; border-radius: var(--radius-lg); overflow: hidden; }
+.figure img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.figure__cap { position: absolute; left: var(--s4); bottom: var(--s4); display: flex; flex-direction: column; padding: var(--s3) var(--s5); border-radius: var(--radius); background: rgba(8,17,31,.86); backdrop-filter: blur(8px); color: var(--white); }
+.figure__cap strong { font-family: var(--font-display); font-size: .92rem; font-weight: 600; }
+.figure__cap span { font-size: .72rem; color: var(--on-navy-faint); letter-spacing: .06em; text-transform: uppercase; }
+
+/* ---------------------------------------------------------------------------
+   14. FAQ
+   --------------------------------------------------------------------------- */
+.faq { border-top: 1px solid var(--line); }
+.s-navy .faq { border-color: var(--on-navy-line); }
+.faq__item { border-bottom: 1px solid var(--line); }
+.s-navy .faq__item { border-color: var(--on-navy-line); }
+.faq__q {
+  display: flex; width: 100%; align-items: center; justify-content: space-between; gap: var(--s5);
+  min-height: 56px; padding-block: var(--s3);
+  font-family: var(--font-display); font-size: 1.02rem; font-weight: 600; line-height: 1.35;
+  text-align: left; color: var(--navy-800);
+  transition: color var(--t) var(--ease);
+}
+.s-navy .faq__q { color: var(--white); }
+.faq__q:hover { color: var(--navy-600); }
+.s-navy .faq__q:hover { color: var(--amber); }
+.faq__icon {
+  display: grid; place-items: center; flex: 0 0 auto; width: 32px; height: 32px;
+  border: 1.5px solid var(--line-strong); border-radius: 50%; color: var(--navy-600);
+  transition: transform var(--t) var(--ease), background-color var(--t) var(--ease), border-color var(--t) var(--ease), color var(--t) var(--ease);
+}
+.s-navy .faq__icon { border-color: var(--on-navy-line); color: var(--white); }
+.faq__q[aria-expanded="true"] .faq__icon { transform: rotate(45deg); background: var(--amber); border-color: var(--amber); color: var(--navy-900); }
+.faq__a { overflow: hidden; }
+.faq__a p { padding-bottom: var(--s5); padding-right: var(--s8); font-size: .94rem; line-height: 1.7; color: var(--ink-soft); }
+.s-navy .faq__a p { color: var(--on-navy-soft); }
+
+/* ---------------------------------------------------------------------------
+   15. Notes & banners
+   --------------------------------------------------------------------------- */
+.notecard { display: flex; gap: var(--s3); padding: var(--s5); border-radius: var(--radius); background: var(--mist); border: 1px solid var(--line); }
+.notecard .ic { flex: 0 0 auto; margin-top: 2px; color: var(--navy-600); }
+.notecard strong { display: block; font-family: var(--font-display); font-size: .96rem; font-weight: 600; color: var(--navy-800); margin-bottom: var(--s2); }
+.notecard p { font-size: .9rem; line-height: 1.65; color: var(--ink-soft); }
+.notecard--warn { background: #FFF8EC; border-color: #F2DDB4; }
+.notecard--warn .ic { color: var(--amber-deep); }
+.notecard--alert { background: var(--danger-bg); border-color: #F0C9C6; }
+.notecard--alert .ic { color: var(--danger); }
+.notecard--alert strong { color: var(--danger); }
+
+/* ---------------------------------------------------------------------------
+   16. Call panel
+   --------------------------------------------------------------------------- */
+/* One shade lighter than the footer beneath it. Both were --navy-900, so the
+   panel and the footer merged into a single dark void and every bit of padding
+   between them read as dead space rather than separation. */
+.cta-panel { position: relative; overflow: hidden; background: var(--navy-800); color: var(--on-navy); isolation: isolate; }
+.cta-panel::before {
+  content: ""; position: absolute; z-index: -1; top: -40%; right: -20%;
+  width: 520px; height: 520px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(240,167,43,.16), transparent 62%);
+}
+.cta-panel__inner { display: grid; gap: var(--s6); padding-block: var(--s8); }
+.cta-panel h2 { color: var(--white); max-width: 30ch; }
+.cta-panel p { margin-top: var(--s4); color: var(--on-navy-soft); max-width: 60ch; }
+.cta-panel__actions { display: flex; flex-direction: column; gap: var(--s3); }
+.cta-panel__actions .btn { width: 100%; }
+.cta-panel__hours { display: flex; align-items: center; gap: var(--s2); margin-top: var(--s2); font-size: .82rem; color: var(--on-navy-faint); }
+.cta-panel__hours .ic { color: var(--amber); }
+
+/* ---------------------------------------------------------------------------
+   17. Service areas / contact
+   --------------------------------------------------------------------------- */
+.areas { display: flex; flex-wrap: wrap; gap: var(--s3); }
+.area-chip { display: inline-flex; align-items: center; gap: var(--s2); padding: var(--s3) var(--s4); border-radius: var(--radius); background: var(--white); border: 1px solid var(--line); }
+.area-chip .ic { color: var(--amber-deep); }
+.area-chip strong { font-family: var(--font-display); font-size: 1rem; font-weight: 600; color: var(--navy-800); }
+
+.contact-card { padding: var(--s6); border-radius: var(--radius-lg); background: var(--navy-800); color: var(--on-navy); }
+.contact-card__label { font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--amber); }
+.contact-card__number { display: block; margin-top: var(--s3); font-family: var(--font-display); font-size: clamp(1.6rem, 6vw, 2.1rem); font-weight: 700; letter-spacing: -.03em; color: var(--white); }
+.contact-card__hours { display: flex; align-items: center; gap: var(--s2); margin-top: var(--s3); font-size: .88rem; color: var(--on-navy-soft); }
+.contact-card__hours .ic { color: var(--amber); }
+.contact-card .btn { margin-top: var(--s6); }
+.contact-card small { display: block; margin-top: var(--s4); font-size: .76rem; line-height: 1.55; color: var(--on-navy-faint); }
+.contact-card__alt { display: flex; gap: var(--s3); align-items: flex-start; margin-top: var(--s5); padding-top: var(--s5); border-top: 1px solid var(--on-navy-line); font-size: .84rem; line-height: 1.55; color: var(--on-navy-soft); }
+.contact-card__alt .ic { flex: 0 0 auto; margin-top: 3px; color: var(--amber); }
+.contact-card__alt a { color: var(--amber); text-decoration: underline; text-underline-offset: 2px; word-break: break-word; }
+
+.prep-list { display: grid; gap: var(--s4); counter-reset: prep; }
+.prep-list li { display: grid; grid-template-columns: 34px 1fr; gap: var(--s4); counter-increment: prep; }
+.prep-list li::before { content: counter(prep, decimal-leading-zero); display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--mist); color: var(--navy-600); font-family: var(--font-display); font-size: .78rem; font-weight: 700; }
+.prep-list strong { display: block; font-family: var(--font-display); font-size: .98rem; font-weight: 600; color: var(--navy-800); }
+.prep-list span { display: block; font-size: .88rem; line-height: 1.6; color: var(--ink-soft); margin-top: 2px; }
+
+/* ---------------------------------------------------------------------------
+   18. Legal pages
+   --------------------------------------------------------------------------- */
+.legal { max-width: 80ch; }
+.legal__updated { display: inline-flex; align-items: center; gap: var(--s2); padding: var(--s2) var(--s4); border-radius: var(--radius-pill); background: var(--mist); font-size: .78rem; font-weight: 600; color: var(--ink-soft); margin-bottom: var(--s8); }
+.legal section + section { margin-top: var(--s8); }
+.legal h2 { font-size: clamp(1.15rem, 3.4vw, 1.35rem); color: var(--navy-800); margin-bottom: var(--s4); }
+.legal p { font-size: .95rem; line-height: 1.75; color: var(--ink-soft); }
+.legal p + p { margin-top: var(--s4); }
+
+/* ---------------------------------------------------------------------------
+   19. Footer
+   --------------------------------------------------------------------------- */
+.sitefoot { background: var(--navy-900); color: var(--on-navy-soft); border-top: 1px solid var(--on-navy-line); }
+.sitefoot__grid { display: grid; gap: var(--s7); padding-block: var(--s8) var(--s7); }
+.sitefoot .brand__text strong { color: var(--white); }
+.sitefoot .brand__text small { color: var(--on-navy-faint); }
+.sitefoot__blurb { margin-top: var(--s3); font-size: .86rem; line-height: 1.6; color: var(--on-navy-faint); max-width: 38ch; }
+.sitefoot__call { display: inline-flex; align-items: center; gap: var(--s3); margin-top: var(--s4); font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; letter-spacing: -.02em; color: var(--amber); }
+.sitefoot__hours { display: flex; align-items: center; gap: var(--s2); margin-top: var(--s2); font-size: .8rem; color: var(--on-navy-faint); }
+.sitefoot__col h2 { font-family: var(--font-body); font-size: .7rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--amber); margin-bottom: var(--s2); }
+.sitefoot__col a { display: flex; align-items: center; min-height: 44px; font-size: .88rem; color: var(--on-navy-soft); transition: color var(--t) var(--ease); }
+.sitefoot__col a:hover { color: var(--white); }
+.sitefoot__reset {
+  display: flex; align-items: center; min-height: 44px;
+  font-size: .88rem; color: var(--on-navy-soft); text-align: left;
+  text-decoration: underline; text-underline-offset: 3px;
+  transition: color var(--t) var(--ease);
+}
+.sitefoot__reset:hover { color: var(--white); }
+.sitefoot__address {
+  display: flex; gap: var(--s2); align-items: flex-start;
+  margin-bottom: var(--s4);
+  font-size: .8rem; line-height: 1.55; color: var(--on-navy-faint);
+}
+.sitefoot__address .ic { flex: 0 0 auto; margin-top: 3px; color: var(--amber); }
+
+.sitefoot__disclosure {
+  display: flex; gap: var(--s3); align-items: flex-start;
+  padding: var(--s4) var(--s5);
+  margin-bottom: var(--s5);
+  border: 1px solid var(--on-navy-line);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,.04);
+  font-size: .84rem; line-height: 1.6; color: var(--on-navy-soft);
+}
+.sitefoot__disclosure .ic { flex: 0 0 auto; margin-top: 3px; color: var(--amber); }
+
+.sitefoot__legal { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
+.sitefoot__legal a { color: var(--on-navy-soft); text-decoration: underline; text-underline-offset: 3px; }
+.sitefoot__legal a:hover { color: var(--white); }
+.sitefoot__legal span { opacity: .4; }
+.sitefoot__base { display: flex; flex-wrap: wrap; flex-direction: column; gap: var(--s3); padding-block: var(--s5); border-top: 1px solid var(--on-navy-line); font-size: .76rem; color: var(--on-navy-faint); }
+
+/* ---------------------------------------------------------------------------
+   20. Consent banner — sits ABOVE the call bar, never over it
+   --------------------------------------------------------------------------- */
+.consent {
+  position: fixed; z-index: var(--z-consent);
+  right: var(--s3); left: var(--s3);
+  bottom: calc(var(--callbar-h) + var(--s3) + env(safe-area-inset-bottom, 0px));
+  padding: var(--s5);
+  border-radius: var(--radius-lg);
+  background: var(--white); border: 1px solid var(--line);
+  box-shadow: var(--shadow-lg);
+}
+.consent strong { display: block; font-family: var(--font-display); font-size: 1rem; font-weight: 600; color: var(--navy-800); }
+.consent p { margin-top: var(--s2); font-size: .82rem; line-height: 1.55; color: var(--ink-soft); }
+.consent p a { color: var(--navy-600); text-decoration: underline; font-weight: 600; }
+.consent__actions { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s2); margin-top: var(--s4); }
+.consent__actions .btn { min-height: 46px; padding-inline: var(--s4); font-size: .86rem; }
+
+/* On a 667px-tall phone the full banner reached up over the hero and covered the
+   call button until it was dismissed — the one element it must never obscure.
+   Below 700px tall it collapses to a compact single-line form. */
+@media (max-height: 700px) {
+  .consent { padding: var(--s4); }
+  .consent strong { font-size: .92rem; }
+  .consent p { margin-top: var(--s1); font-size: .76rem; line-height: 1.45; }
+  .consent p .consent__detail { display: none; }
+  .consent__actions { margin-top: var(--s3); }
+  .consent__actions .btn { min-height: 44px; font-size: .8rem; }
+}
+
+/* ---------------------------------------------------------------------------
+   21. 404
+   --------------------------------------------------------------------------- */
+.notfound { display: grid; place-items: center; min-height: 62vh; text-align: center; padding-block: var(--s10); }
+.notfound__code { font-family: var(--font-display); font-size: clamp(3rem, 15vw, 6rem); font-weight: 700; line-height: 1; letter-spacing: -.05em; color: var(--mist); }
+.notfound h1 { margin-top: calc(var(--s6) * -1); color: var(--navy-800); }
+.notfound p { margin-top: var(--s4); }
+.notfound__actions { display: flex; flex-direction: column; gap: var(--s3); margin-top: var(--s7); width: 100%; max-width: 320px; }
+
+/* ---------------------------------------------------------------------------
+   21b. Timed call prompt
+        A bottom sheet on phones, a centred card on desktop.
+
+        Rebuilt for amber discipline: the badge, the tick marks and the clock
+        were all amber, so five amber things competed and the call button
+        stopped reading as THE action. Amber now appears exactly once per
+        screen — on the button. Everything else is white, or muted white.
+   --------------------------------------------------------------------------- */
+/* The OVERLAY scrolls, never the card. Giving the card its own overflow meant
+   its content could scroll inside a fixed frame — the heading and close button
+   would drift out of view while the card stayed put. Now the card is always its
+   natural height and, on a screen too short to hold it, the whole overlay
+   scrolls as one piece, which is what a modal is expected to do. */
+.callpop {
+  position: fixed; inset: 0; z-index: var(--z-modal);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.callpop::-webkit-scrollbar { width: 0; height: 0; display: none; }
+
+.callpop__scrim {
+  position: absolute; inset: 0;
+  background: rgba(4,9,17,.66);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 300ms var(--ease);
+}
+.callpop.is-open .callpop__scrim { opacity: 1; }
+
+.callpop__card {
+  position: relative; isolation: isolate;
+  padding: var(--s5) var(--s6) calc(var(--s6) + env(safe-area-inset-bottom, 0px));
+  border-radius: 26px 26px 0 0;
+  background: linear-gradient(180deg, #16294a 0%, var(--navy-800) 38%);
+  color: var(--on-navy);
+  box-shadow: 0 -20px 70px rgba(2,6,14,.6);
+  transform: translateY(102%);
+  transition: transform 420ms var(--ease-out);
+
+  /* No max-height and no overflow: the card is exactly as tall as its content,
+     so there is nothing to scroll and no scrollbar to suppress. */
+  flex: 0 0 auto;
+  overflow: visible;
+}
+.callpop.is-open .callpop__card { transform: translateY(0); }
+
+/* 1px gradient rim, brightest at the top-left where the light would fall.
+   Drawn with a mask so it stays a hairline on the rounded corners instead of
+   the smeared band a plain gradient background produces. */
+.callpop__card::after {
+  content: ""; position: absolute; inset: 0; z-index: 2;
+  border-radius: inherit; padding: 1px;
+  background: linear-gradient(155deg, rgba(255,255,255,.42), rgba(255,255,255,.07) 34%, transparent 62%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Faint warm bloom low in the card, under the button. Reinforces the CTA
+   rather than competing with it — it is light, not another amber object. */
+.callpop__card::before {
+  content: ""; position: absolute; z-index: -1;
+  left: 50%; bottom: -14%; width: 340px; height: 240px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(240,167,43,.17), transparent 68%);
+  pointer-events: none;
+}
+
+/* Grab handle: tells a thumb this sheet is dismissible. */
+.callpop__grip {
+  width: 40px; height: 4px; margin: 0 auto var(--s4);
+  border-radius: 99px; background: rgba(255,255,255,.22);
+}
+
+/* Absolute, and the card is now sized so it does not scroll — a floated or
+   sticky button would make the eyebrow and heading wrap around it, which is a
+   worse problem than the one it solves. */
+.callpop__close {
+  position: absolute; top: var(--s3); right: var(--s3); z-index: 3;
+  display: grid; place-items: center; width: 44px; height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.07);
+  color: rgba(255,255,255,.62);
+  transform: rotate(45deg);
+  transition: background-color var(--t) var(--ease), color var(--t) var(--ease);
+}
+.callpop__close:hover { background: rgba(255,255,255,.16); color: var(--white); }
+.callpop__close .ic { width: 18px; height: 18px; }
+
+.callpop__eyebrow {
+  padding-right: 48px;   /* clear of the close button */
+  font-size: .68rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
+  color: rgba(255,255,255,.46);
+}
+.callpop__title {
+  margin-top: var(--s2); max-width: 15ch;
+  font-family: var(--font-display); font-size: clamp(1.35rem, 5vw, 1.6rem);
+  font-weight: 700; line-height: 1.1; letter-spacing: -.03em; color: var(--white);
+}
+.callpop__text {
+  margin-top: var(--s2); max-width: 38ch;
+  font-size: .92rem; line-height: 1.55; color: rgba(255,255,255,.66);
+}
+
+/* Compact, neutral. These support the decision; they must not decorate it. */
+.callpop__list { display: grid; gap: var(--s2); margin-top: var(--s4); }
+.callpop__list li { display: flex; gap: var(--s3); align-items: center; font-size: .84rem; color: rgba(255,255,255,.74); }
+.callpop__list .ic { flex: 0 0 auto; width: 15px; height: 15px; color: rgba(255,255,255,.4); stroke-width: 2.6; }
+
+.callpop__card .btn--call {
+  margin-top: var(--s5);
+  min-height: 60px; font-size: 1.06rem;
+  box-shadow: 0 10px 30px rgba(201,127,10,.42);
+}
+
+.callpop__hours {
+  display: flex; align-items: center; justify-content: center; gap: var(--s2);
+  margin-top: var(--s3); font-size: .78rem; color: rgba(255,255,255,.44);
+}
+.callpop__hours .ic { width: 14px; height: 14px; color: inherit; }
+
+.callpop__dismiss {
+  display: block; width: 100%; min-height: 44px; margin-top: var(--s1);
+  font-size: .84rem; font-weight: 600; color: rgba(255,255,255,.42);
+  transition: color var(--t) var(--ease);
+}
+.callpop__dismiss:hover { color: rgba(255,255,255,.8); }
+
+@media (min-width: 600px) {
+  .callpop { justify-content: center; align-items: center; padding: var(--s6); }
+  .callpop__card { margin-block: auto; }
+  .callpop__card {
+    width: 100%; max-width: 420px;
+    padding: var(--s7) var(--s7) var(--s6);
+    border-radius: 26px;
+    transform: translateY(14px) scale(.975);
+    opacity: 0;
+    transition: transform 380ms var(--ease-out), opacity 260ms var(--ease);
+  }
+  .callpop.is-open .callpop__card { transform: none; opacity: 1; }
+  .callpop__grip { display: none; }
+  .callpop__title { font-size: 1.5rem; }
+}
+
+/* Progressive trimming, so the card fits the viewport instead of the overlay
+   needing to scroll. Thresholds are deliberately generous: a 667px phone and a
+   short laptop window both land inside them. */
+@media (max-height: 820px) {
+  .callpop__card { padding-top: var(--s4); }
+  .callpop__list { gap: var(--s1); margin-top: var(--s4); }
+  .callpop__card .btn--call { margin-top: var(--s5); }
+}
+@media (max-height: 720px) {
+  .callpop__list { display: none; }
+  .callpop__title { font-size: 1.25rem; }
+  .callpop__text { margin-top: var(--s2); font-size: .86rem; }
+  .callpop__grip { margin-bottom: var(--s4); }
+  .callpop__card .btn--call { min-height: 54px; }
+}
+@media (max-height: 600px) {
+  .callpop__text { display: none; }
+  .callpop__hours { margin-top: var(--s3); }
+}
+
+/* ---------------------------------------------------------------------------
+   21e. Contact page layout
+        The phone card and the enquiry form sit side by side, so a visitor picks
+        a route rather than scrolling past one to discover the other. The card
+        is deliberately the narrower column: it holds one number and one button,
+        while the form holds eight fields.
+   --------------------------------------------------------------------------- */
+.contact-layout { display: grid; gap: var(--s6); align-items: start; }
+
+/* The form, as a panel that can hold its own beside the navy card. */
+.leadpanel {
+  padding: var(--s5);
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.leadpanel__head { margin-bottom: var(--s3); }
+.leadpanel__head h2 {
+  margin-top: 6px;
+  font-size: clamp(1.1rem, 2.2vw, 1.24rem);
+  color: var(--navy-800);
+}
+.leadpanel__head p {
+  margin-top: 6px;
+  font-size: .82rem; line-height: 1.55; color: var(--ink-soft);
+}
+
+/* The left column stacks the phone card and the "have this ready" list. */
+.contact-col { display: grid; gap: var(--s6); align-content: start; }
+
+.prep-block {
+  padding: var(--s5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--white);
+}
+.prep-block h2 {
+  margin-top: 6px;
+  font-size: clamp(1.1rem, 2.2vw, 1.24rem);
+  color: var(--navy-800);
+}
+.prep-block > p {
+  margin-top: 6px;
+  font-size: .82rem; line-height: 1.55; color: var(--ink-soft);
+}
+.prep-block .prep-list { margin-top: var(--s5); }
+
+@media (min-width: 900px) {
+  /* Form gets the wider half — it has eight fields to the card's one button. */
+  .contact-layout { grid-template-columns: .82fr 1.18fr; gap: var(--s8); }
+  .leadpanel { padding: 22px; }
+
+  .prep-block { padding: var(--s6); }
+}
+
+/* The form sits in a column, not a full-width page, so its paired fields need
+   more room than the viewport-wide breakpoint gives them. */
+@media (min-width: 1000px) {
+  .leadform__row { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 900px) and (max-width: 999px) {
+  .leadform__row { grid-template-columns: 1fr; }
+}
+
+/* ---------------------------------------------------------------------------
+   21d. Lead form
+        Inputs are 52px tall and 16px in font-size. The size is not decorative:
+        iOS zooms the viewport when a focused input is under 16px, which throws
+        a mobile visitor out of the layout mid-form.
+   --------------------------------------------------------------------------- */
+.leadform { display: grid; gap: 10px; }
+.leadform__row { display: grid; gap: var(--s3); }
+
+.field { display: grid; gap: 5px; }
+.field label {
+  font-size: .78rem; font-weight: 600; color: var(--navy-800);
+  display: flex; align-items: center; gap: 6px;
+}
+.field .req { color: var(--danger); font-weight: 700; }
+.field .opt { font-weight: 500; font-size: .7rem; color: var(--ink-faint); }
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 13px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1rem;            /* 16px — below this iOS zooms on focus */
+  line-height: 1.5;
+  transition: border-color var(--t) var(--ease), box-shadow var(--t) var(--ease);
+}
+.field textarea { min-height: 72px; resize: vertical; padding-block: 10px; }
+
+.field select {
+  appearance: none;
+  padding-right: var(--s8);
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink-soft) 50%),
+                    linear-gradient(135deg, var(--ink-soft) 50%, transparent 50%);
+  background-position: calc(100% - 22px) 55%, calc(100% - 16px) 55%;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+.field input:hover, .field select:hover, .field textarea:hover { border-color: var(--navy-500); }
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none;
+  border-color: var(--navy-600);
+  box-shadow: 0 0 0 3px rgba(39,74,117,.16);
+}
+.field ::placeholder { color: var(--ink-faint); }
+
+.field--bad input, .field--bad select, .field--bad textarea { border-color: var(--danger); }
+.field--bad input:focus, .field--bad select:focus, .field--bad textarea:focus {
+  box-shadow: 0 0 0 3px rgba(179,38,30,.16);
+}
+
+.field__hint { font-size: .72rem; line-height: 1.45; color: var(--ink-faint); }
+.field__err  { font-size: .74rem; font-weight: 600; color: var(--danger); }
+
+/* Honeypot. Removed from the flow without display:none, which some bots detect
+   and skip — this stays "present" while being unreachable and invisible. */
+.leadform__trap {
+  position: absolute !important;
+  left: -9999px !important;
+  width: 1px; height: 1px; overflow: hidden;
+}
+
+/* Consent. Deliberately conspicuous: a TCPA checkbox that reads as fine print
+   is weak evidence of consent. The target is the whole box, not just the tick. */
+.consent-box {
+  display: flex; gap: var(--s3); align-items: flex-start;
+  padding: 12px 13px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--mist);
+}
+.consent-box input[type="checkbox"] {
+  flex: 0 0 auto;
+  width: 19px; height: 19px; margin-top: 1px;
+  accent-color: var(--navy-700);
+  cursor: pointer;
+}
+.consent-box label {
+  font-size: .74rem; line-height: 1.5; color: var(--ink-soft); cursor: pointer;
+}
+.consent-box:focus-within { border-color: var(--navy-600); box-shadow: 0 0 0 3px rgba(39,74,117,.16); }
+.consent-box--bad { border-color: var(--danger); background: var(--danger-bg); }
+
+.leadform__submit { margin-top: 2px; }
+.leadform__note { text-align: center; font-size: .72rem; line-height: 1.45; }
+.leadform__note a { color: var(--navy-600); text-decoration: underline; text-underline-offset: 2px; }
+
+/* Success state. The only green on the site — it means one thing. */
+.notecard--ok { background: #ECFAF1; border-color: #B7E4C7; }
+.notecard--ok .ic { color: #15803D; }
+.notecard--ok strong { color: #14532D; }
+
+@media (min-width: 700px) {
+  .leadform__row { grid-template-columns: 1fr 1fr; }
+}
+
+/* ---------------------------------------------------------------------------
+   21c. Interaction effects
+        Deliberately restrained: each one marks a state change, none of them is
+        decoration for its own sake. All are disabled under prefers-reduced-motion
+        by the global rule in section 24.
+   --------------------------------------------------------------------------- */
+
+/* Light sweeping across the call button on hover. Excluded from .btn--stack,
+   whose phone badge has a pulsing ring that overflow:hidden would clip. */
+.btn--call:not(.btn--stack) { position: relative; overflow: hidden; }
+.btn--call:not(.btn--stack) > * { position: relative; z-index: 1; }
+.btn--call:not(.btn--stack)::after {
+  content: ""; position: absolute; inset: 0; z-index: 0;
+  background: linear-gradient(105deg, transparent 36%, rgba(255,255,255,.5) 50%, transparent 64%);
+  transform: translateX(-130%);
+  pointer-events: none;
+}
+.btn--call:not(.btn--stack):hover::after { animation: sheen 820ms var(--ease-out) 1; }
+@keyframes sheen { to { transform: translateX(130%); } }
+
+/* Buttons lift toward the pointer, then press in. */
+.btn--call:hover, .btn--dark:hover, .btn--outline:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(1px) scale(.985); }
+
+/* The phone glyph rings, once every few seconds, only inside the prompt. */
+.callpop__card .btn--call .ic { animation: handset 3.4s var(--ease) 1.2s infinite; transform-origin: 50% 60%; }
+@keyframes handset {
+  0%, 86%, 100% { transform: rotate(0deg); }
+  89%  { transform: rotate(-14deg); }
+  92%  { transform: rotate(11deg); }
+  95%  { transform: rotate(-7deg); }
+  98%  { transform: rotate(3deg); }
+}
+
+/* Cards rise and sharpen on hover. */
+.svc-card, .tile, .info-card { will-change: transform; }
+.info-card { transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease), border-color var(--t) var(--ease); }
+.info-card:hover { transform: translateY(-3px); border-color: var(--line-strong); box-shadow: var(--shadow); }
+
+/* Icons inside links track the link's hover. */
+.tile:hover .tile__num, .svc-card:hover .svc-card__tag { transform: translateY(-1px); }
+.tile__num, .svc-card__tag { transition: transform var(--t) var(--ease); }
+
+/* Underline that grows from the left rather than snapping on. */
+.textlink { position: relative; }
+.textlink::after {
+  content: ""; position: absolute; left: 0; right: 100%; bottom: 8px; height: 2px;
+  background: var(--amber); opacity: .85;
+  transition: right var(--t) var(--ease);
+}
+.textlink:hover::after { right: 0; }
+
+/* ---------------------------------------------------------------------------
+   22. Motion — GSAP drives these; CSS only sets the pre-animation state,
+       and only when JS has confirmed it will run.
+   --------------------------------------------------------------------------- */
+.js-motion [data-anim] { opacity: 0; }
+.js-motion [data-anim="rise"]  { transform: translateY(22px); }
+.js-motion [data-anim="fade"]  { transform: none; }
+.js-motion [data-anim="left"]  { transform: translateX(-22px); }
+.js-motion [data-anim="right"] { transform: translateX(22px); }
+.js-motion [data-anim="scale"] { transform: scale(.96); }
+[data-anim].is-shown { opacity: 1; transform: none; }
+
+/* ---------------------------------------------------------------------------
+   23. Breakpoints
+   --------------------------------------------------------------------------- */
+@media (min-width: 600px) {
+  :root { --gutter: 28px; }
+  .hero__actions { flex-direction: row; flex-wrap: wrap; }
+  .hero__actions .btn { width: auto; flex: 1 1 auto; min-width: 220px; }
+  .svc-grid { grid-template-columns: repeat(2, 1fr); }
+  .tile-grid { grid-template-columns: repeat(2, 1fr); }
+  .info-grid { grid-template-columns: repeat(2, 1fr); }
+  .trustrow__grid { grid-template-columns: repeat(2, 1fr); }
+  .quickcall .wrap { flex-direction: row; align-items: center; justify-content: space-between; }
+  .cta-panel__actions { flex-direction: row; }
+  .cta-panel__actions .btn { width: auto; }
+  .notfound__actions { flex-direction: row; max-width: none; justify-content: center; }
+  .sitefoot__base { flex-direction: row; align-items: center; justify-content: space-between; }
+  .consent { right: auto; left: var(--s5); max-width: 460px; }
+  .consent__actions { grid-template-columns: auto auto; justify-content: start; }
+}
+
+@media (min-width: 900px) {
+  :root { --gutter: 36px; --callbar-h: 0px !important; }
+  html { scroll-padding-top: 96px; }
+
+  .topbar { font-size: .78rem; }
+  .topbar .wrap { justify-content: space-between; gap: var(--s5); padding-block: var(--s2); text-align: left; }
+  .topbar__item .ic { width: 1em; height: 1em; }
+  .masthead .wrap { min-height: 66px; gap: var(--s5); }
+  .navtoggle { display: none; }
+  .drawer { display: none; }
+
+  .mainnav { display: flex; align-items: center; gap: var(--s2); }
+  .mainnav a {
+    position: relative; display: inline-flex; align-items: center; min-height: 44px;
+    padding: 0 var(--s3); font-size: .92rem; font-weight: 600; color: var(--ink-soft);
+    transition: color var(--t) var(--ease);
+  }
+  .mainnav a:hover { color: var(--navy-800); }
+  .mainnav a.is-active { color: var(--navy-800); }
+  .mainnav a.is-active::after {
+    content: ""; position: absolute; left: var(--s3); right: var(--s3); bottom: 6px;
+    height: 2px; border-radius: 2px; background: var(--amber);
+  }
+  .masthead__call { display: inline-flex; }
+
+  /* The sticky bar is a mobile device. Desktop keeps the header CTA instead. */
+  .callbar { display: none; }
+  body { padding-bottom: 0; }
+  .consent { bottom: var(--s6); }
+
+  .section { padding-block: var(--s12); }
+  .section--tight { padding-block: var(--s10); }
+
+  .hero__inner { padding-block: var(--s11) var(--s12); max-width: 900px; }
+  .hero__media img { object-position: center; }
+  .hero__scrim { background: linear-gradient(90deg, rgba(8,17,31,.96) 0%, rgba(8,17,31,.86) 46%, rgba(8,17,31,.42) 100%); }
+  .hero__points { grid-template-columns: repeat(2, 1fr); gap: var(--s4); }
+
+  .pagehead__inner { padding-block: var(--s10) var(--s11); max-width: 920px; }
+
+  .svc-grid { grid-template-columns: repeat(4, 1fr); gap: var(--s4); }
+  .svc-card { min-height: 300px; }
+  .tile-grid { grid-template-columns: repeat(4, 1fr); }
+  .info-grid { grid-template-columns: repeat(3, 1fr); gap: var(--s6); }
+
+  /* Four-item variant. The base grid is 3-up, which leaves a four-card set as
+     3 + 1 with a stranded card on its own row. */
+  .info-grid--four { grid-template-columns: repeat(4, 1fr); gap: var(--s5); }
+  .trustrow__grid { grid-template-columns: repeat(4, 1fr); }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s12); align-items: center; }
+  .split--wide-left { grid-template-columns: 1.15fr .85fr; }
+  .split--wide-right { grid-template-columns: .85fr 1.15fr; }
+
+  .sec-head--row { display: grid; grid-template-columns: 1.1fr .9fr; gap: var(--s10); align-items: end; max-width: none; }
+
+  .cta-panel__inner { grid-template-columns: 1.15fr auto; align-items: center; padding-block: var(--s10); }
+  .cta-panel__actions { flex-direction: column; align-items: stretch; min-width: 300px; }
+
+  .sitefoot__grid { grid-template-columns: 1.3fr repeat(3, 1fr); gap: var(--s7); }
+
+  .steps--row { grid-template-columns: repeat(4, 1fr); gap: var(--s6); }
+  .steps--row .step { grid-template-columns: 1fr; padding-bottom: 0; }
+  .steps--row .step::after { top: 18px; left: 46px; right: -20px; bottom: auto; width: auto; height: 2px; background: linear-gradient(90deg, var(--line-strong), transparent); }
+  .steps--row .step:last-child::after { display: none; }
+  .s-navy .steps--row .step::after { background: linear-gradient(90deg, var(--on-navy-line), transparent); }
+
+  .signals--two { grid-template-columns: repeat(2, 1fr); }
+  .faq__a p { padding-right: var(--s10); }
+}
+
+@media (min-width: 1200px) {
+  :root { --gutter: 48px; }
+  .hero__inner { padding-block: var(--s12) calc(var(--s12) + var(--s5)); }
+}
+
+/* Below the smallest common phone, keep everything inside the viewport. */
+@media (max-width: 359px) {
+  :root { --gutter: 16px; }
+  .btn { padding-inline: var(--s4); font-size: .94rem; }
+  .callbar__aux { width: 50px; }
+}
+
+/* ---------------------------------------------------------------------------
+   24. Reduced motion
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+  .js-motion [data-anim] { opacity: 1 !important; transform: none !important; }
+  .phone-badge::after { display: none; }
+  .js .callbar { transform: translateY(0); }   /* was .callbar — lost to .js .callbar on specificity */
+
+  /* The prompt still appears — it just arrives without the slide. */
+  .callpop__card { transform: none !important; opacity: 1 !important; }
+  .callpop__scrim { opacity: 1; }
+  .callpop__card .btn--call .ic { animation: none !important; }
+  .btn--call:not(.btn--stack)::after { display: none; }
+  .btn--call:hover, .btn--dark:hover, .btn--outline:hover { transform: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   25. Print
+   --------------------------------------------------------------------------- */
+@media print {
+  .masthead, .topbar, .callbar, .consent, .drawer, .prelaunch, .cta-panel { display: none !important; }
+  body { padding-bottom: 0; background: #fff; color: #000; }
+  .hero, .pagehead { background: #fff !important; color: #000 !important; }
+  .hero__media, .pagehead__media, .hero__scrim, .pagehead__scrim { display: none; }
+}

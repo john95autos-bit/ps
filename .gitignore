@@ -1,0 +1,39 @@
+# =============================================================================
+#  AD Housing Services — PHP site + React app
+# =============================================================================
+
+# Local configuration overrides (real phone number, Ads ID, domain).
+# config/local.php.example is committed; the real file is not.
+/config/local.php
+
+# Credentials and secrets. The .jetro daemon file was NOT ignored before, which
+# meant a token written there would have been committed. .openai/hosting.json
+# is the sibling hosting-credential file and gets the same treatment.
+.jetro/
+.openai/
+*.pem
+*.key
+.env*
+# ...but .env.example carries no secrets and documents every variable the app
+# needs, so it is the one .env file that must be committed.
+!.env.example
+!**/.env.example
+
+# Editor / OS noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# PHP tooling, if it is ever added
+/vendor/
+composer.lock
+
+# Node / React app. react-app/.gitignore covers these too; repeated here so the
+# rule survives if that file is ever moved or the app is relocated.
+node_modules/
+dist/
+.smoke/
+.vercel
+*.log

@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.smoke/
+.env
+.env.local
+.env*.local
+.vercel
+.DS_Store
+Thumbs.db
+*.log
+
+# Generated at build time from src/config/site.js by scripts/generate-seo.js.
+public/robots.txt
+public/sitemap.xml

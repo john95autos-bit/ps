@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0E1C31">
+<meta name="format-detection" content="telephone=no">
+
+<!-- Defaults only. usePageMeta() rewrites title, description, robots, canonical
+     and the Open Graph block per route once React mounts. A scraper that does
+     not run JavaScript sees exactly what is below, so keep it honest. -->
+<title>AD Housing Services | Practical Home-Service Support</title>
+<meta name="description" content="Connect with local independent contractors for pest control, roofing, gardening and plumbing, nationwide across the United States.">
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml">
+
+<!-- Fonts are self-hosted, so they preload from this origin with no third-party
+     connection. These URLs must byte-match the src in the @font-face rules in
+     src/styles/site.css, or the browser treats them as different resources and
+     downloads each face twice. -->
+<link rel="preload" href="/fonts/space-grotesk-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/vendor/fontawesome/webfonts/fa-solid-subset.woff2" as="font" type="font/woff2" crossorigin>
+
+<!-- Consent Mode 'default' must be registered before the Google tag loads and
+     before any 'update' is replayed, so it runs here rather than from a
+     component. The original site pushed bare arrays —
+     dataLayer.push(["consent","default",{...}]) — which is not the shape the tag
+     reads, so the denied default never actually registered.
+
+     A stored choice is replayed immediately too: doing it from the React bundle
+     could land after gtag's 500 ms wait_for_update window and silently lose a
+     returning visitor's granted consent. -->
+<script>
+(function () {
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  window.gtag = window.gtag || gtag;
+
+  gtag('consent', 'default', {
+    ad_storage: 'denied',
+    analytics_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    wait_for_update: 500
+  });
+
+  try {
+    var c = localStorage.getItem('adhs-consent');
+    if (c) {
+      var v = c === 'accepted' ? 'granted' : 'denied';
+      gtag('consent', 'update', {
+        ad_storage: v, analytics_storage: v, ad_user_data: v, ad_personalization: v
+      });
+    }
+  } catch (e) { /* private mode — stay on the denied default */ }
+})();
+</script>
+</head>
+<body>
+<div id="root"></div>
+<script type="module" src="/src/main.jsx"></script>
+</body>
+</html>

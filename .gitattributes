@@ -1,0 +1,10 @@
+# Normalise line endings in the repo, so a checkout on another machine does not
+# show every file as modified. Binary assets are marked so Git never touches
+# them or tries to diff them as text.
+* text=auto eol=lf
+
+*.woff2 binary
+*.webp  binary
+*.png   binary
+*.jpg   binary
+*.ico   binary
