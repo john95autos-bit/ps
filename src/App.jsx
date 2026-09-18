@@ -7,7 +7,6 @@
  *   -> consent banner -> call prompt
  */
 
-import { Suspense, lazy } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
 import Header from './components/Header.jsx';
@@ -23,16 +22,25 @@ import useSiteMotion from './lib/useSiteMotion.js';
 
 import Home from './pages/Home.jsx';
 import NotFound from './pages/NotFound.jsx';
+import PestControl from './pages/PestControl.jsx';
+import PestDetail from './pages/PestDetail.jsx';
+import Service from './pages/Service.jsx';
+import About from './pages/About.jsx';
+import ServiceAreas from './pages/ServiceAreas.jsx';
+import Contact from './pages/Contact.jsx';
+import Legal from './pages/Legal.jsx';
 
-/* Only the home page is in the initial bundle. Everything else splits, so an ad
-   click that lands on / does not download the legal documents to get there. */
-const PestControl = lazy(() => import('./pages/PestControl.jsx'));
-const PestDetail = lazy(() => import('./pages/PestDetail.jsx'));
-const Service = lazy(() => import('./pages/Service.jsx'));
-const About = lazy(() => import('./pages/About.jsx'));
-const ServiceAreas = lazy(() => import('./pages/ServiceAreas.jsx'));
-const Contact = lazy(() => import('./pages/Contact.jsx'));
-const Legal = lazy(() => import('./pages/Legal.jsx'));
+/* Every page is imported eagerly, and deliberately so.
+ *
+ * These were React.lazy chunks, which broke hydration: the prerendered HTML
+ * holds the finished page, but on the client the lazy component has not loaded
+ * at hydration time, so React renders the Suspense fallback instead, sees a
+ * mismatch (error #418) and throws the server markup away to re-render from
+ * scratch. That defeated the entire point of prerendering and left the scroll
+ * reveals attached to a DOM that had been replaced underneath them.
+ *
+ * The saving was never real anyway — all seven page modules together are about
+ * 35 KB, against a round trip per navigation. */
 
 export default function App() {
   const location = useLocation();
@@ -54,23 +62,21 @@ export default function App() {
 
       <main id="main-content">
         <ErrorBoundary key={location.pathname}>
-          <Suspense fallback={<div className="section" data-suspense="" aria-hidden="true" />}>
-            <Routes location={location}>
-              <Route path="/" element={<Home />} />
-              <Route path="/pest-control" element={<PestControl />} />
-              <Route path="/pest-control/:slug" element={<PestDetail />} />
-              <Route path="/roofing" element={<Service slug="roofing" />} />
-              <Route path="/gardening" element={<Service slug="gardening" />} />
-              <Route path="/plumbing" element={<Service slug="plumbing" />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/service-areas" element={<ServiceAreas />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/privacy" element={<Legal slug="privacy" />} />
-              <Route path="/terms" element={<Legal slug="terms" />} />
-              <Route path="/disclaimer" element={<Legal slug="disclaimer" />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
+          <Routes location={location}>
+            <Route path="/" element={<Home />} />
+            <Route path="/pest-control" element={<PestControl />} />
+            <Route path="/pest-control/:slug" element={<PestDetail />} />
+            <Route path="/roofing" element={<Service slug="roofing" />} />
+            <Route path="/gardening" element={<Service slug="gardening" />} />
+            <Route path="/plumbing" element={<Service slug="plumbing" />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/service-areas" element={<ServiceAreas />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/privacy" element={<Legal slug="privacy" />} />
+            <Route path="/terms" element={<Legal slug="terms" />} />
+            <Route path="/disclaimer" element={<Legal slug="disclaimer" />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </ErrorBoundary>
       </main>
 
