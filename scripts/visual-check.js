@@ -205,6 +205,17 @@ async function auditMobile(browser, route) {
     await page.waitForSelector('[data-callpop]:not([hidden])', { timeout: 8000 }).catch(() => {});
     await page.waitForTimeout(600);
 
+    /* What a visitor does next: tries to scroll. Body is locked, so the gesture
+       lands on the sheet. The wrapper was a scroll container with 43px of
+       overflow from a decorative pseudo-element, and one tick dragged the card
+       and its scrim up, exposing un-dimmed page beneath. */
+    const sheet = await page.$('[data-callpop]:not([hidden])');
+    if (sheet) {
+      await page.mouse.move(187, 500);
+      await page.mouse.wheel(0, 300);
+      await page.waitForTimeout(400);
+    }
+
     return await page.evaluate(() => {
       const box = (sel) => {
         const el = document.querySelector(sel);
@@ -235,6 +246,19 @@ async function auditMobile(browser, route) {
         if (close && close.right > vw + 1) problems.push('prompt close button is off-screen');
         if (cta && cta.bottom > window.innerHeight + 1) {
           problems.push('prompt call button is below the fold');
+        }
+
+        /* After the scroll gesture above, the sheet must not have moved. */
+        const wrapper = document.querySelector('.callpop');
+        const scrim = box('.callpop__scrim');
+        if (wrapper && wrapper.scrollTop > 0) {
+          problems.push('sheet scrolled by ' + wrapper.scrollTop + 'px when the visitor tried to scroll');
+        }
+        if (card.bottom < window.innerHeight - 1) {
+          problems.push('gap of ' + (window.innerHeight - card.bottom) + 'px below the sheet');
+        }
+        if (scrim && scrim.bottom < window.innerHeight - 1) {
+          problems.push('scrim no longer covers the bottom ' + (window.innerHeight - scrim.bottom) + 'px');
         }
 
         /* While the prompt is open it must be the only thing on screen. The

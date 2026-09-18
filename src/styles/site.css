@@ -877,16 +877,20 @@ p { text-wrap: pretty; }
 .callpop {
   position: fixed; inset: 0; z-index: var(--z-modal);
   display: flex; flex-direction: column; justify-content: flex-end;
-  overflow-y: auto;
+  /* Never a scroll container. This was overflow-y:auto, and the card's ::before
+     glow hangs 14% below the card, which made the wrapper scrollable by ~43px.
+     Body scrolling is locked while the sheet is open, so the first wheel tick
+     or thumb-drag landed here instead - and scrolled the sheet AND its scrim up
+     by that much, exposing a strip of un-dimmed page beneath. The card is sized
+     to fit by the max-height rules further down; there is nothing to scroll. */
+  overflow: hidden;
   overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
 }
-.callpop::-webkit-scrollbar { width: 0; height: 0; display: none; }
 
 .callpop__scrim {
-  position: absolute; inset: 0;
+  /* Fixed, not absolute: pinned to the viewport regardless of anything the
+     wrapper does, so no scroll can ever pull it off the bottom of the screen. */
+  position: fixed; inset: 0;
   background: rgba(4,9,17,.66);
   backdrop-filter: blur(4px);
   opacity: 0;
