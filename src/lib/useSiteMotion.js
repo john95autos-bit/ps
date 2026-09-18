@@ -53,6 +53,22 @@ function showEverything() {
 const belowFold = (el) => el.getBoundingClientRect().top >= window.innerHeight * 0.9;
 
 /**
+ * The starting offset for one element, given the viewport.
+ *
+ * On a phone the sideways variants are dropped in favour of a plain rise. A
+ * 22px horizontal offset on an element that already spans gutter to gutter
+ * pushes it past the edge of the screen, and every such element waiting its
+ * turn widened the document by those 22px — which made the layout viewport
+ * wider than the device, so everything position:fixed (the call bar, the
+ * consent banner, the call prompt) sized to the overflow and hung off the
+ * right-hand side. A horizontal slide also reads oddly at that width.
+ */
+function fromFor(kind, narrow) {
+  if (narrow && (kind === 'left' || kind === 'right')) return FROM.rise;
+  return FROM[kind] || FROM.rise;
+}
+
+/**
  * Rescue anything that is on screen and still transparent.
  *
  * Uses !important on the inline style deliberately: GSAP writes its own inline
@@ -112,6 +128,8 @@ export default function useSiteMotion(pathname) {
 
       gsap.registerPlugin(ScrollTrigger);
 
+      const narrow = window.matchMedia('(max-width: 899px)').matches;
+
       ctx = gsap.context(() => {
         /* Group siblings that share a [data-anim-group] parent so they stagger
            together instead of each firing its own ScrollTrigger. */
@@ -142,7 +160,7 @@ export default function useSiteMotion(pathname) {
           const kind = node.getAttribute('data-anim') || 'rise';
           const delay = parseFloat(node.getAttribute('data-anim-delay') || '0');
 
-          gsap.fromTo(node, FROM[kind] || FROM.rise, {
+          gsap.fromTo(node, fromFor(kind, narrow), {
             ...TO,
             duration: 0.6,
             delay,

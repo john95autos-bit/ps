@@ -184,6 +184,66 @@ async function auditRoute(page, route) {
   return { ...result, aboveFold, errors };
 }
 
+/**
+ * Second pass, on a phone.
+ *
+ * Two things only go wrong at this width, and both shipped: a document wider
+ * than the screen, and a call prompt whose close or call button falls outside
+ * it. The first causes the second — everything position:fixed sizes to the
+ * overflowed width — so they are checked together.
+ */
+async function auditMobile(browser, route) {
+  const page = await browser.newPage({
+    viewport: { width: 375, height: 667 },
+    deviceScaleFactor: 2,
+    isMobile: true,
+    hasTouch: true,
+  });
+
+  try {
+    await page.goto(BASE + route, { waitUntil: 'networkidle', timeout: 45000 });
+    await page.waitForSelector('[data-callpop]:not([hidden])', { timeout: 8000 }).catch(() => {});
+    await page.waitForTimeout(600);
+
+    return await page.evaluate(() => {
+      const box = (sel) => {
+        const el = document.querySelector(sel);
+        if (!el) return null;
+        const r = el.getBoundingClientRect();
+        return {
+          left: Math.round(r.left),
+          right: Math.round(r.right),
+          bottom: Math.round(r.bottom),
+        };
+      };
+
+      const vw = document.documentElement.clientWidth;
+      const problems = [];
+
+      if (document.documentElement.scrollWidth > vw + 1) {
+        problems.push(
+          'document is ' + document.documentElement.scrollWidth + 'px wide on a ' + vw + 'px screen'
+        );
+      }
+
+      const card = box('.callpop__card');
+      if (card) {
+        const close = box('.callpop__close');
+        const cta = box('.callpop__card .btn--call');
+        if (card.right > vw + 1 || card.left < -1) problems.push('prompt card overflows the screen');
+        if (close && close.right > vw + 1) problems.push('prompt close button is off-screen');
+        if (cta && cta.bottom > window.innerHeight + 1) {
+          problems.push('prompt call button is below the fold');
+        }
+      }
+
+      return problems;
+    });
+  } finally {
+    await page.close();
+  }
+}
+
 async function main() {
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
@@ -235,12 +295,37 @@ async function main() {
     }
   }
 
+  await page.close();
+
+  console.log('');
+  console.log('  mobile (375x667)');
+  console.log('');
+
+  for (const route of ROUTES) {
+    let problems;
+    try {
+      problems = await auditMobile(browser, route);
+    } catch (error) {
+      console.log('  FAIL  ' + route + ' — ' + error.message.slice(0, 80));
+      failures += 1;
+      continue;
+    }
+
+    if (problems.length) {
+      failures += 1;
+      console.log('  FAIL  ' + route);
+      problems.forEach((msg) => console.log('          ' + msg));
+    } else {
+      console.log('    ok  ' + route.padEnd(34) + ' fits the screen');
+    }
+  }
+
   await browser.close();
 
   console.log(
     failures === 0
-      ? `\n  All ${ROUTES.length} routes render their content.`
-      : `\n  ${failures} of ${ROUTES.length} routes have invisible content.`
+      ? `\n  All ${ROUTES.length} routes pass on desktop and mobile.`
+      : `\n  ${failures} check(s) failed.`
   );
   process.exit(failures === 0 ? 0 : 1);
 }

@@ -405,13 +405,17 @@ p { text-wrap: pretty; }
    pages never showed the service area above the fold — the single fact a paid
    visitor most needs before deciding to call. It now shows on mobile too, in a
    compact form carrying area + hours. */
-.topbar { background: var(--navy-900); color: var(--on-navy-soft); font-size: .72rem; }
-.topbar .wrap { display: flex; align-items: center; justify-content: center; gap: var(--s4); padding-block: 6px; text-align: center; }
-.topbar__item { display: inline-flex; align-items: center; gap: var(--s1); white-space: nowrap; }
-.topbar__item .ic { width: .95em; height: .95em; }
+/* Desktop only. Its two items are nowrap, and together they are wider than a
+   phone, so leaving it on below 900px pushed the document to 463px against a
+   375px viewport. Everything position:fixed — the call bar, the consent banner,
+   the call prompt — then sized to that overflowed width, which is why the
+   prompt's close button sat off the right edge of the screen.
+   It is also simply not wanted on a phone: vertical space above the fold
+   belongs to the call action. */
+.topbar { display: none; background: var(--navy-900); color: var(--on-navy-soft); font-size: .72rem; }
 .topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: var(--s5); padding-block: var(--s2); }
-.topbar__item { display: inline-flex; align-items: center; gap: var(--s2); }
-.topbar__item .ic { color: var(--amber); }
+.topbar__item { display: inline-flex; align-items: center; gap: var(--s2); white-space: nowrap; }
+.topbar__item .ic { width: .95em; height: .95em; color: var(--amber); }
 
 .masthead {
   position: sticky; top: 0; z-index: var(--z-header);
@@ -1267,7 +1271,7 @@ p { text-wrap: pretty; }
   :root { --gutter: 36px; --callbar-h: 0px !important; }
   html { scroll-padding-top: 96px; }
 
-  .topbar { font-size: .78rem; }
+  .topbar { display: block; font-size: .78rem; }
   .topbar .wrap { justify-content: space-between; gap: var(--s5); padding-block: var(--s2); text-align: left; }
   .topbar__item .ic { width: 1em; height: 1em; }
   .masthead .wrap { min-height: 66px; gap: var(--s5); }
