@@ -1,11 +1,21 @@
 /**
  * The pest-control landing page.
  *
- * Call surfaces on this page: pest_hero, pest_quickcall, pest_cta_panel.
+ * The primary ad target per LAUNCH-CHECKLIST.md, so it carries the most weight
+ * of any sub-page: it has to answer the question a worried visitor arrives
+ * with, route them to the right guide, and set expectations about safety and
+ * outcomes without promising either.
+ *
+ * Nothing here names a product, an active ingredient or an application method,
+ * and nothing promises eradication. Those decisions belong to the licensed
+ * applicator who attends, under the product label and local law.
+ *
+ * Call surfaces: pest_hero, pest_quickcall, pest_mid, pest_cta_panel.
  */
 
 import { Link } from 'react-router-dom';
-import { SITE, PEST_TYPES } from '../config/site.js';
+import { SITE } from '../config/site.js';
+import { PEST_TYPES } from '../config/pests.js';
 import { routeFor, pageTitle, metaText } from '../config/routes.js';
 import { usePageMeta } from '../lib/usePageMeta.js';
 import { pad2 } from '../lib/format.js';
@@ -19,22 +29,42 @@ const pestFaqs = [
   {
     question: 'Which pest-control treatment do I need?',
     answer:
-      'That depends on the pest, the evidence found, activity level, property layout and any sensitive areas. Start with an inspection or a detailed phone conversation.',
+      'That depends on the species, the evidence found, the activity level, the property layout and any sensitive areas. Start with an inspection or a detailed phone conversation — a plan proposed before any of that is known is a guess.',
   },
   {
     question: 'Are treatments safe for children and pets?',
     answer:
-      'Safety depends on the product, placement and label directions. Always disclose children, pets and health concerns and follow preparation and re-entry instructions exactly.',
+      'Safety depends on the product, its placement and its label directions, and those decisions belong to the licensed technician who attends rather than to a website. Always disclose children, pets, pregnancy, allergies and respiratory conditions, and follow every preparation and re-entry instruction exactly.',
   },
   {
     question: 'Do I need to leave the property?',
     answer:
-      'Some services may require temporary vacancy while others may not. You should receive instructions specific to the proposed treatment before it starts.',
+      'Some treatments require temporary vacancy and others do not. You should receive instructions specific to the proposed treatment before it starts, including any re-entry period. If that has not been explained, ask before work begins.',
   },
   {
     question: 'Can you guarantee pests will never return?',
     answer:
-      'No responsible provider can promise that for every situation. Building condition, sanitation, neighbouring activity, weather and follow-up actions can all affect recurrence.',
+      'No responsible provider can promise that for every situation. Building condition, sanitation, neighbouring activity, weather and follow-up actions all affect recurrence. Treat a guarantee of permanent elimination as a warning sign rather than a selling point.',
+  },
+  {
+    question: 'Should I try to treat it myself first?',
+    answer:
+      'Retail products have a place for a single insect, but for an established population they commonly scatter activity into voids and adjoining rooms, which makes the professional work harder and longer. If you have already used something, say so — it changes the approach.',
+  },
+  {
+    question: 'How much does pest control cost?',
+    answer:
+      'We do not set prices and will not quote one here. The contractor quotes after assessing the species, the extent, the property and the access required. What we can tell you is what affects it, which is set out above.',
+  },
+  {
+    question: 'Does having pests mean my home is dirty?',
+    answer:
+      'No. Cleanliness affects how well a population is supported once it arrives, but pests get in through deliveries, second-hand furniture, shared walls, luggage and simple proximity. Bed bugs in particular have nothing to do with hygiene.',
+  },
+  {
+    question: 'Will one visit be enough?',
+    answer:
+      'Sometimes, and often not. Egg stages resistant to treatment, wary species and heavy activity all commonly need follow-up. Ask for the expected number of visits at the outset rather than discovering it later.',
   },
 ];
 
@@ -58,6 +88,48 @@ const pestMethod = [
   'Explain preparation before the visit',
   'Discuss products and sensitive areas',
   'Provide realistic follow-up expectations',
+];
+
+/* What actually changes the plan and the price. No numbers — the contractor
+   sets those after seeing the property. */
+const planFactors = [
+  {
+    title: 'The species',
+    text: 'Two insects that look similar to a homeowner can need completely different approaches. Identification is the first step for a reason, and it is why a photograph is worth more than a description.',
+  },
+  {
+    title: 'How established it is',
+    text: 'A single wanderer and a breeding population on site are different problems. Egg cases, shed skins and droppings in multiple locations point at the second.',
+  },
+  {
+    title: 'The building',
+    text: 'A detached house, an apartment with shared voids and a terrace with connected roof spaces each change what is reachable and whether neighbouring units are part of the picture.',
+  },
+  {
+    title: 'Access to harbourage',
+    text: 'If activity is behind fitted units, under floors or in a sealed void, reaching it is most of the job. Clearing what you safely can before the visit genuinely shortens it.',
+  },
+  {
+    title: 'Sensitive occupants',
+    text: 'Children, pets, pregnancy, allergies, respiratory conditions and food-preparation areas all constrain what can be used and where. Disclose them early rather than on the day.',
+  },
+  {
+    title: 'What has already been tried',
+    text: 'Previous retail treatments disperse activity and can mask evidence. It is not a criticism — it is information the technician needs in order to read the property correctly.',
+  },
+];
+
+/* Prevention is the part that stays with the property after the contractor has
+   left, and the part most sites skip because nothing is being sold. */
+const prevention = [
+  'Store dry food and pet food in sealed hard containers rather than original packaging',
+  'Deal with moisture: dripping traps, condensation, leaks and poor ventilation',
+  'Reduce clutter, especially cardboard and paper stored in warm or dark spaces',
+  'Close gaps around pipework, cabinet voids and service penetrations',
+  'Keep bins closed and, where possible, away from the building',
+  'Cut back vegetation touching external walls and branches reaching the roof',
+  'Check second-hand furniture and deliveries before they come inside',
+  'Act on the first evidence rather than waiting to see whether it gets worse',
 ];
 
 export default function PestControl() {
@@ -88,8 +160,9 @@ export default function PestControl() {
               Pest control starts with an inspection, <em>not a guess.</em>
             </h1>
             <p className="lede lede--on-navy">
-              Describe the pest, signs and affected rooms. We will discuss availability, preparation
-              and the next suitable step for your property.
+              Describe the pest, the signs and the affected rooms. We will connect you with a local
+              independent contractor who can discuss availability, preparation and the next suitable
+              step for your property.
             </p>
             <div className="hero__actions">
               <PhoneCta placement="pest_hero" className="btn btn--call btn--lg" />
@@ -127,8 +200,9 @@ export default function PestControl() {
               <h2>Find the page closest to what you have noticed.</h2>
             </div>
             <p className="lede">
-              These guides explain common signs and questions. They are not a substitute for an
-              on-site inspection where one is needed.
+              Each guide covers how to tell that species apart from its look-alikes, what tends to
+              support it, and how to prepare. They are not a substitute for an on-site inspection
+              where one is needed.
             </p>
           </div>
           <div className="tile-grid" data-anim-group="">
@@ -155,7 +229,7 @@ export default function PestControl() {
               <p className="lede">
                 Useful pest management considers harbourage, food, moisture and entry points
                 alongside any treatment. The recommended steps should match the evidence and the
-                property.
+                property, and you should be told why each one is proposed.
               </p>
               <ul className="checklist">
                 {pestMethod.map((item) => (
@@ -183,6 +257,28 @@ export default function PestControl() {
 
       <section className="section s-white">
         <div className="wrap">
+          <div className="sec-head" data-anim="rise">
+            <p className="eyebrow">What shapes the plan</p>
+            <h2>Why two similar-looking problems get different answers.</h2>
+            <p className="lede">
+              We do not publish prices, because the contractor sets them after assessing the job.
+              These are the things that actually decide both the approach and the cost.
+            </p>
+          </div>
+          <div className="info-grid" data-anim-group="">
+            {planFactors.map((factor, i) => (
+              <article className="info-card" data-anim="rise" key={factor.title}>
+                <span className="info-card__num">{pad2(i + 1)}</span>
+                <h3>{factor.title}</h3>
+                <p>{factor.text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section s-white">
+        <div className="wrap">
           <div className="sec-head sec-head--center" data-anim="rise">
             <p className="eyebrow">From call to follow-up</p>
             <h2>A clear four-step path.</h2>
@@ -200,6 +296,52 @@ export default function PestControl() {
         </div>
       </section>
 
+      <section className="section s-mist">
+        <div className="wrap">
+          <div className="split split--wide-left">
+            <div className="stack" data-anim="left">
+              <p className="eyebrow">Reducing the chance it returns</p>
+              <h2>The part that stays with the property.</h2>
+              <p className="lede">
+                Treatment deals with the population that is there now. Whether another one
+                establishes is mostly decided by conditions, and those are yours to manage long
+                after the contractor has gone.
+              </p>
+              <PhoneCta placement="pest_mid" className="btn btn--call" />
+            </div>
+            <div data-anim="right">
+              <ul className="checklist">
+                {prevention.map((item) => (
+                  <li key={item}>
+                    <Icon id="i-shield" className="ic ic--sm" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section section--tight s-white">
+        <div className="wrap wrap--narrow">
+          <div className="notecard notecard--warn" data-anim="rise">
+            <Icon id="i-alert" className="ic ic--lg" />
+            <div>
+              <strong>Products, labels and who decides</strong>
+              <p>
+                Any pesticide use must follow the product label and applicable local rules. Which
+                product is appropriate, where it may be placed and how long you must stay out are
+                decisions for the licensed technician attending your property — not for a website,
+                and not for a price comparison. Disclose children, pets, pregnancy, allergies,
+                respiratory conditions and food-preparation areas before treatment, and ask for
+                re-entry instructions in writing.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="section s-navy">
         <div className="wrap">
           <div className="split split--wide-right">
@@ -207,7 +349,9 @@ export default function PestControl() {
               <p className="eyebrow eyebrow--on-navy">Pest-control FAQs</p>
               <h2>Clear answers before treatment.</h2>
               <p className="lede lede--on-navy">
-                Ask for instructions specific to your household and the products proposed.
+                Ask for instructions specific to your household and the products proposed. See also
+                the <Link to="/disclaimer">service disclaimer</Link> for the limits of anything
+                described here.
               </p>
             </div>
             <div data-anim="right">

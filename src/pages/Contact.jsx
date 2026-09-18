@@ -21,6 +21,28 @@ import CallPanel from '../components/CallPanel.jsx';
 import LeadForm from '../components/LeadForm.jsx';
 import PhoneLink, { PhoneCta } from '../components/PhoneLink.jsx';
 
+/* What happens after someone gets in touch. A contact page that only collects
+   details and says nothing about what follows leaves the visitor guessing, and
+   a guessing visitor assumes the worst — that they have just joined a list. */
+const whatHappensNext = [
+  {
+    title: 'We confirm coverage',
+    text: 'First we check whether an independent contractor covers your area and takes that kind of work. If none does, we tell you straight away rather than leaving the enquiry open.',
+  },
+  {
+    title: 'A contractor contacts you',
+    text: 'They call to discuss the job, ask anything the description did not cover and arrange an assessment if one is needed. From that point the arrangement is between the two of you.',
+  },
+  {
+    title: 'You get a scope and a price',
+    text: 'Quoted by the contractor after seeing the job, not by us and not in advance. Nothing is authorised until you have agreed both.',
+  },
+  {
+    title: 'You are free to decline',
+    text: 'At any point. Calling or sending the form does not create a booking, a contract or an obligation, and it costs you nothing either way.',
+  },
+];
+
 /* Numbering is a CSS counter on .prep-list li — never written into the markup. */
 const contactSteps = [
   { title: 'Your location', text: 'Postcode, ZIP code or neighbourhood.' },
@@ -113,6 +135,29 @@ export default function Contact() {
 
           <div data-anim="right">
             <LeadForm />
+          </div>
+        </div>
+      </section>
+
+      <section className="section s-white">
+        <div className="wrap">
+          <div className="sec-head" data-anim="rise">
+            <p className="eyebrow">What happens next</p>
+            <h2>After you call or send the form.</h2>
+            <p className="lede">
+              We are a free platform connecting homeowners with local independent contractors, so
+              it is worth being clear about which part is us and which part is them.
+            </p>
+          </div>
+          <div className="steps steps--row" data-anim-group="">
+            {whatHappensNext.map((step) => (
+              <article className="step" data-anim="rise" key={step.title}>
+                <div>
+                  <h3>{step.title}</h3>
+                  <p>{step.text}</p>
+                </div>
+              </article>
+            ))}
           </div>
         </div>
       </section>

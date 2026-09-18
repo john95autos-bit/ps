@@ -4,11 +4,17 @@
  * One component, three routes: every string is read from
  * SERVICE_DETAILS[slug], so the three landing pages can never drift apart.
  *
- * Call surfaces on this page: <slug>_hero, <slug>_cta_panel.
+ * Section order is deliberate and follows the question a visitor actually
+ * arrives with: is this my problem (signs) → what would someone do about it
+ * (covers / factors) → how does this start (process) → what do I need to do
+ * (prepare) → when should I act (timing) → the things I was going to ask
+ * anyway (FAQ) → the limits (notes).
+ *
+ * Call surfaces on this page: <slug>_hero, <slug>_mid, <slug>_cta_panel.
  */
 
 import { Link } from 'react-router-dom';
-import { SERVICE_DETAILS } from '../config/site.js';
+import { SERVICE_DETAILS } from '../config/services.js';
 import { routeFor, pageTitle, metaText } from '../config/routes.js';
 import { usePageMeta } from '../lib/usePageMeta.js';
 import { pad2 } from '../lib/format.js';
@@ -40,6 +46,10 @@ function ServiceBody({ service, route, slug }) {
 
   const highlights = service.highlights ?? [];
   const signs = service.signs ?? [];
+  const included = service.included ?? [];
+  const factors = service.factors ?? [];
+  const prepare = service.prepare ?? [];
+  const timing = service.timing ?? [];
   const process = service.process ?? [];
   const faqs = service.faqs ?? [];
 
@@ -85,7 +95,10 @@ function ServiceBody({ service, route, slug }) {
           <div className="sec-head" data-anim="rise">
             <p className="eyebrow">What to look for</p>
             <h2>Small signs can point to a bigger maintenance need.</h2>
-            <p className="lede">These are useful conversation starters, not a remote diagnosis.</p>
+            <p className="lede">
+              These are useful conversation starters, not a remote diagnosis. Noticing one does not
+              confirm a problem — it means it is worth describing to someone who can look.
+            </p>
           </div>
           <div className="info-grid" data-anim-group="">
             {signs.map((sign, i) => (
@@ -99,7 +112,53 @@ function ServiceBody({ service, route, slug }) {
         </div>
       </section>
 
-      <section className="section s-white">
+      {included.length ? (
+        <section className="section s-white">
+          <div className="wrap">
+            <div className="split split--wide-right">
+              <div className="stack" data-anim="left">
+                <p className="eyebrow">What a visit covers</p>
+                <h2>What a contractor normally looks at.</h2>
+                <p className="lede">
+                  Scope is the contractor’s to set and access dictates a lot of it, but an
+                  assessment usually takes in the following.
+                </p>
+                <ul className="checklist">
+                  {included.map((item) => (
+                    <li key={item}>
+                      <Icon id="i-check" className="ic ic--sm" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <PhoneCta placement={`${slug}_mid`} className="btn btn--call" />
+              </div>
+
+              <div className="stack" data-anim="right">
+                <p className="eyebrow">What moves the price</p>
+                <h2>Why nobody sensible quotes blind.</h2>
+                <p className="lede">
+                  We do not publish prices, because the contractor sets them and the job decides
+                  them. These are the things that actually change the number.
+                </p>
+                <div className="signals" data-anim-group="">
+                  {factors.map((factor) => (
+                    <div className="signal" data-anim="rise" key={factor.title}>
+                      <Icon id="i-info" />
+                      <div>
+                        <strong>{factor.title}</strong>
+                        <p className="signal__text">{factor.text}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      <section className="section s-paper">
         <div className="wrap">
           <div className="sec-head sec-head--row" data-anim="rise">
             <div>
@@ -125,13 +184,57 @@ function ServiceBody({ service, route, slug }) {
         </div>
       </section>
 
+      {prepare.length ? (
+        <section className="section s-white">
+          <div className="wrap wrap--narrow">
+            <div className="sec-head" data-anim="rise">
+              <p className="eyebrow">Before the visit</p>
+              <h2>Ten minutes now saves a wasted appointment.</h2>
+              <p className="lede">
+                None of this is required, and none of it is difficult. It is simply what makes the
+                difference between a visit that reaches an answer and one that has to come back.
+              </p>
+            </div>
+            <ul className="checklist" data-anim-group="">
+              {prepare.map((item) => (
+                <li data-anim="rise" key={item}>
+                  <Icon id="i-clipboard" className="ic ic--sm" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      ) : null}
+
+      {timing.length ? (
+        <section className="section s-mist">
+          <div className="wrap">
+            <div className="sec-head sec-head--center" data-anim="rise">
+              <p className="eyebrow">When to act</p>
+              <h2>Timing changes what the job costs.</h2>
+            </div>
+            <div className="info-grid info-grid--four" data-anim-group="">
+              {timing.map((item, i) => (
+                <article className="info-card" data-anim="rise" key={item.title}>
+                  <span className="info-card__num">{pad2(i + 1)}</span>
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       <section className="section s-navy">
         <div className="wrap split split--wide-right">
           <div className="sec-head" data-anim="left">
             <p className="eyebrow eyebrow--on-navy">Common questions</p>
             <h2>Useful answers before you call.</h2>
-            <p className="lede">
-              Availability and exact service details vary by location and property.
+            <p className="lede lede--on-navy">
+              Availability and exact service details vary by location and property. If your question
+              is specific to yours, a short phone conversation will get you further than a page can.
             </p>
           </div>
           <div data-anim="right">

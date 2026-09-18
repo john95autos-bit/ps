@@ -16,7 +16,9 @@
  */
 
 import { Link } from 'react-router-dom';
-import { SITE, MAIN_SERVICES, PEST_TYPES, SERVICE_DETAILS } from '../config/site.js';
+import { SITE, MAIN_SERVICES } from '../config/site.js';
+import { PEST_TYPES } from '../config/pests.js';
+import { SERVICE_DETAILS } from '../config/services.js';
 import { routeFor, pageTitle, metaText } from '../config/routes.js';
 import { usePageMeta } from '../lib/usePageMeta.js';
 import { pad2 } from '../lib/format.js';
