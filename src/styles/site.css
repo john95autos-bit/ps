@@ -1388,6 +1388,78 @@ p { text-wrap: pretty; }
 /* ---------------------------------------------------------------------------
    25. Print
    --------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------
+   26. Phone scale
+   The base rules were written mobile-first but tuned on a desktop, and on a
+   375px screen the whole thing read as zoomed: a 677px hero (taller than the
+   viewport, so the primary call button arrived below the fold), 52px of
+   padding above and below every section, 416px info cards, an 89px sticky
+   bar sitting under a 54px hero button, and a 154px pre-launch banner. The
+   home page ran to 13,000px.
+
+   Everything here only applies below the 600px breakpoint the rest of the
+   sheet already uses, so desktop is untouched. Values step down one notch on
+   the existing spacing scale rather than inventing new ones.
+   --------------------------------------------------------------------------- */
+@media (max-width: 599px) {
+  /* Type. One size down, tighter leading; nothing below 15px for body copy. */
+  .hero__title { font-size: 1.7rem; line-height: 1.12; letter-spacing: -.02em; }
+  .pagehead h1 { font-size: 1.55rem; line-height: 1.15; }
+  h2 { font-size: 1.3rem; }
+  .lede { font-size: .95rem; line-height: 1.55; }
+  .eyebrow { font-size: .68rem; }
+  .hero__chip { font-size: .7rem; padding: 6px var(--s3); }
+  .hero__points li { font-size: .84rem; }
+  .fineprint { font-size: .74rem; }
+
+  /* Rhythm. Sections and heads one step down the scale. */
+  .section { padding-block: var(--s8); }
+  .section--tight { padding-block: var(--s7); }
+  .sec-head { margin-bottom: var(--s5); }
+  .sec-head > * + * { margin-top: var(--s3); }
+  .hero__inner { padding-block: var(--s6) var(--s7); }
+  .hero__inner > * + * { margin-top: var(--s4); }
+  .hero__actions { gap: var(--s2); }
+  .pagehead__inner { padding-block: var(--s5) var(--s6); }
+  .pagehead__inner > * + * { margin-top: var(--s3); }
+  .trustrow__grid { padding-block: var(--s5); gap: var(--s4); }
+  .quickcall .wrap { padding-block: var(--s5); gap: var(--s3); }
+  .cta-panel__inner { padding-block: var(--s7); gap: var(--s5); }
+  .stack > * + * { margin-top: var(--s3); }
+  .stack-lg > * + * { margin-top: var(--s5); }
+  .split { gap: var(--s5); }
+
+  /* Cards and lists. */
+  .info-card, .notecard, .signal, .tile, .svc-card { padding: var(--s4); }
+  .svc-card { min-height: 200px; }
+  .tile { min-height: 0; }
+  .step { padding-bottom: var(--s5); grid-template-columns: 32px 1fr; gap: var(--s3); }
+  .step::before { width: 32px; height: 32px; font-size: .8rem; }
+  .checklist li { font-size: .9rem; line-height: 1.5; }
+  .faq__q { font-size: .95rem; }
+
+  /* Controls. Still comfortably above the 44px touch minimum. */
+  .btn { min-height: 46px; padding: 10px var(--s5); font-size: .95rem; }
+  .btn--lg { min-height: 50px; font-size: .98rem; }
+
+  /* Sticky call bar: 89px to roughly 64px. It sits directly beneath the hero's
+     own call button on arrival, so it must not be the bigger of the two. */
+  .callbar { padding: var(--s2) var(--gutter) calc(var(--s2) + env(safe-area-inset-bottom, 0px)); gap: var(--s2); }
+  .callbar__call { min-height: 48px; }
+  .callbar__aux { width: 48px; min-height: 48px; }
+  .callbar .phone-badge { width: 34px; height: 34px; }
+  .callbar .btn--stack .btn__label small { font-size: .64rem; }
+  .callbar .btn--stack .btn__label strong { font-size: 1rem; }
+
+  /* Pre-launch banner: 154px of red paragraph to about two lines. It is only
+     ever shown to the operator, and the full sentence is still there for
+     whoever wants to read it - clamped, not removed. */
+  .prelaunch { font-size: .68rem; line-height: 1.35; }
+  .prelaunch .wrap { padding-block: 6px; gap: var(--s1) var(--s2); }
+  .prelaunch strong { font-size: .62rem; }
+  .prelaunch span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+}
+
 @media print {
   .masthead, .topbar, .callbar, .consent, .drawer, .prelaunch, .cta-panel { display: none !important; }
   body { padding-bottom: 0; background: #fff; color: #000; }

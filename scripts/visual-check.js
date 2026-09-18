@@ -202,6 +202,18 @@ async function auditMobile(browser, route) {
 
   try {
     await page.goto(BASE + route, { waitUntil: 'networkidle', timeout: 45000 });
+
+    /* The site's own stated rule, from the page comments: the primary call
+       button is above the fold at 375x667, on arrival, with room for the
+       sticky bar beneath it. Measured before anything else happens. The hero
+       once ran to 677px on a 667px screen, which put the one element the ad
+       spend exists for below the bottom edge on the primary landing page. */
+    const arrival = await page.evaluate(() => {
+      const cta = document.querySelector('.hero .btn--call, .pagehead .btn--call');
+      if (!cta) return null;
+      return { bottom: Math.round(cta.getBoundingClientRect().bottom), vh: window.innerHeight };
+    });
+
     await page.waitForSelector('[data-callpop]:not([hidden])', { timeout: 8000 }).catch(() => {});
     await page.waitForTimeout(600);
 
@@ -216,7 +228,7 @@ async function auditMobile(browser, route) {
       await page.waitForTimeout(400);
     }
 
-    return await page.evaluate(() => {
+    const found = await page.evaluate(() => {
       const box = (sel) => {
         const el = document.querySelector(sel);
         if (!el) return null;
@@ -297,6 +309,16 @@ async function auditMobile(browser, route) {
 
       return problems;
     });
+
+    /* Room for the sticky bar (about 64px on a phone) plus a little air. */
+    if (arrival && arrival.bottom > arrival.vh - 72) {
+      found.push(
+        'primary call button not above the fold on arrival (bottom ' +
+          arrival.bottom + 'px of ' + arrival.vh + 'px)'
+      );
+    }
+
+    return found;
   } finally {
     await page.close();
   }
