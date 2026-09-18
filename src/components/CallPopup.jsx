@@ -1,13 +1,23 @@
 /**
  * The timed call prompt.
  *
- * A soft dialog that surfaces the phone number a few seconds into the page
+ * A soft dialog that surfaces the phone number a few seconds into every page
  * view. Timing and copy come from CALL_POPUP in src/config/site.js, not from
  * constants in here.
  *
+ * Copy is per-route: callPopupFor(pathname) picks the variant, so someone
+ * reading about bed bugs gets a bed bug prompt rather than a generic one. Each
+ * variant carries its own `placement`, which reaches Google Ads as the
+ * conversion's link_placement — so you can see which page's prompt actually
+ * earns calls, and switch off the ones that do not.
+ *
+ * It re-arms on every route change, because a client-side navigation is a new
+ * page view to the visitor even though the document never reloaded. Without
+ * that this fired once per hard load and never again, whatever the config said.
+ *
  * Deliberate suppressions — an unwanted prompt costs more calls than it wins:
- *   · never for a visitor who has already tapped a call link this page view
- *   · never while the mobile menu is open
+ *   · never while the mobile menu is open, which it would cover
+ *   · never for a visitor who has already tapped a call link on this page view
  *   · optionally once per session, when config says so
  *
  * It is a real modal: focus moves into it, is trapped while open, and returns
@@ -17,7 +27,8 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { CALL_POPUP, SITE } from '../config/site.js';
+import { useLocation } from 'react-router-dom';
+import { CALL_POPUP, SITE, callPopupFor } from '../config/site.js';
 import Icon from './Icon.jsx';
 import { PhoneCta, callState } from './PhoneLink.jsx';
 import { consentState } from './CookieConsent.jsx';
@@ -46,29 +57,38 @@ const push = (event, extra = {}) => {
 };
 
 export default function CallPopup() {
+  const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
   const cardRef = useRef(null);
   const lastFocused = useRef(null);
   const borrowedConsent = useRef(false);
 
-  const close = useCallback(
-    (reason = 'dismissed') => {
-      setOpen(false);
-      document.body.classList.remove('is-locked');
+  const popup = callPopupFor(pathname);
 
-      if (borrowedConsent.current) {
-        borrowedConsent.current = false;
-        consentState.show?.();
-      }
+  const close = useCallback((reason = 'dismissed') => {
+    setOpen(false);
+    document.body.classList.remove('is-locked');
 
-      lastFocused.current?.focus?.({ preventScroll: true });
-      push('call_prompt_closed', { close_reason: reason });
-    },
-    []
-  );
+    if (borrowedConsent.current) {
+      borrowedConsent.current = false;
+      consentState.show?.();
+    }
 
+    lastFocused.current?.focus?.({ preventScroll: true });
+    push('call_prompt_closed', { close_reason: reason });
+  }, []);
+
+  /* Re-armed per route. Everything about a navigation — the timer, the
+     already-called suppression, any prompt still open from the previous page —
+     resets, because to the visitor this is a new page. */
   useEffect(() => {
     if (!CALL_POPUP.enabled) return undefined;
+
+    setOpen(false);
+    document.body.classList.remove('is-locked');
+    borrowedConsent.current = false;
+    callState.started = false;
+
     if (CALL_POPUP.oncePerSession && seenThisSession()) return undefined;
 
     const timer = setTimeout(() => {
@@ -80,19 +100,20 @@ export default function CallPopup() {
       /* If the consent banner is still on screen, tuck it away for the duration
          rather than covering it — it comes back the moment this closes, so the
          visitor still gets to make the choice. */
-      if (consentState.visible) {
-        borrowedConsent.current = true;
-      }
+      if (consentState.visible) borrowedConsent.current = true;
 
       lastFocused.current = document.activeElement;
       setOpen(true);
       document.body.classList.add('is-locked');
       markSeen();
-      push('call_prompt_shown');
+      push('call_prompt_shown', { prompt_variant: popup.placement });
     }, CALL_POPUP.delayMs);
 
-    return () => clearTimeout(timer);
-  }, []);
+    return () => {
+      clearTimeout(timer);
+      document.body.classList.remove('is-locked');
+    };
+  }, [pathname, popup.placement]);
 
   /* Focus trap + Escape, live only while the dialog is open. */
   useEffect(() => {
@@ -162,17 +183,17 @@ export default function CallPopup() {
           <Icon id="i-plus" />
         </button>
 
-        <p className="callpop__eyebrow">{CALL_POPUP.eyebrow}</p>
+        <p className="callpop__eyebrow">{popup.eyebrow}</p>
         <h2 className="callpop__title" id="callpop-title">
-          {CALL_POPUP.title}
+          {popup.title}
         </h2>
         <p className="callpop__text" id="callpop-text">
-          {CALL_POPUP.text}
+          {popup.text}
         </p>
 
-        {CALL_POPUP.reasons?.length ? (
+        {popup.reasons?.length ? (
           <ul className="callpop__list">
-            {CALL_POPUP.reasons.map((reason) => (
+            {popup.reasons.map((reason) => (
               <li key={reason}>
                 <Icon id="i-check" className="ic ic--sm" />
                 <span>{reason}</span>
@@ -181,11 +202,8 @@ export default function CallPopup() {
           </ul>
         ) : null}
 
-        {/* Distinct placement so calls started from this prompt are separable
-            from hero and sticky-bar calls in Google Ads reporting — that is how
-            you find out whether the prompt is actually earning its intrusion. */}
         <PhoneCta
-          placement="popup"
+          placement={popup.placement}
           className="btn btn--call btn--lg btn--block"
           onClick={() => close('called')}
         />
@@ -196,7 +214,7 @@ export default function CallPopup() {
         </p>
 
         <button className="callpop__dismiss" type="button" onClick={() => close('dismissed')}>
-          {CALL_POPUP.dismiss}
+          {popup.dismiss}
         </button>
       </div>
     </div>
