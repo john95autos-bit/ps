@@ -150,7 +150,6 @@ export const CALL_POPUP = {
       'We confirm coverage and availability',
       'Scope agreed before any work',
     ],
-    dismiss: 'Keep reading',
   },
 
   /* Per-page copy, keyed by route. A visitor reading about bed bugs gets a

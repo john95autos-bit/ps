@@ -212,10 +212,6 @@ export default function CallPopup() {
           <Icon id="i-clock" className="ic ic--sm" />
           <span>{SITE.hours}</span>
         </p>
-
-        <button className="callpop__dismiss" type="button" onClick={() => close('dismissed')}>
-          {popup.dismiss}
-        </button>
       </div>
     </div>
   );

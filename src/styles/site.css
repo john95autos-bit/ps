@@ -975,13 +975,6 @@ p { text-wrap: pretty; }
 }
 .callpop__hours .ic { width: 14px; height: 14px; color: inherit; }
 
-.callpop__dismiss {
-  display: block; width: 100%; min-height: 44px; margin-top: var(--s1);
-  font-size: .84rem; font-weight: 600; color: rgba(255,255,255,.42);
-  transition: color var(--t) var(--ease);
-}
-.callpop__dismiss:hover { color: rgba(255,255,255,.8); }
-
 @media (min-width: 600px) {
   .callpop { justify-content: center; align-items: center; padding: var(--s6); }
   .callpop__card { margin-block: auto; }
